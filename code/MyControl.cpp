@@ -24,7 +24,8 @@ MyControl::~MyControl()
 
 	net->GetUpLoadManager()->CloseAllThread();
 	net->GetDownLoadManager()->CloseAllThread();
-
+	std::cout << "close all transfer\n";
+	Sleep(500);
 	Cleaner::Release<MyUserInfo*>(&user);
 	Cleaner::Release<MyNetFileManager*>(&netFileManager);
 	Cleaner::Release<MyNetWork*>(&net);

@@ -24,7 +24,7 @@ bool MyNetWork::InitSocket()
 {
 	sendRecv = MySendRecvThread::Instance();
 	bool r = false;
-	r = sendRecv->Init("10.201.14.162", 10087);
+	r = sendRecv->Init("10.201.14.164", 10087);
 	if (r == false) {
 		Cleaner::Release<MySendRecvThread*>(&sendRecv);
 		return false;
@@ -60,7 +60,7 @@ bool MyNetWork::InitMessageSocket(std::string &token, std::string &username)
 	recv->SetUsername(username);
 	recv->SetTokenOne(token);
 	bool r = false;
-	r = recv->Init("10.201.14.162", 10087);
+	r = recv->Init("10.201.14.164", 10087);
 	if (r == false) {
 		Cleaner::Release<MyRecvThread*>(&recv);
 		return false;
@@ -116,7 +116,7 @@ bool MyNetWork::NewMissionD(std::string &uID, std::string &token_one, std::strin
 	if (temp == 0) {
 		return false;
 	}
-	if (temp->InitSocket("127.0.0.1", 6000) == false) {
+	if (temp->InitSocket("10.201.14.164", 10087) == false) {
 		Cleaner::Release<MyDownLoadMission*>(&temp);
 		return false;
 	}
@@ -128,19 +128,20 @@ bool MyNetWork::NewMissionD(std::string &uID, std::string &token_one, std::strin
 	return true;
 }
 
-bool MyNetWork::NewMissionU(std::string &fileName, std::string &localPath, std::string &netPath, std::string &token_one, std::string &username)
+bool MyNetWork::NewMissionU(std::string &fileName, unsigned long long uID, std::string &localPath, std::string &netPath, std::string &token_one, std::string &username)
 {
 	MyUpLoadMission* temp = 0;
 	temp = new MyUpLoadMission();
 	if (temp == 0) {
 		return false;
 	}
-	if (!temp->InitSocket("127.0.0.1", 6000)) {
+	if (!temp->InitSocket("10.201.14.164", 10087)) {
 		Cleaner::Release<MyUpLoadMission*>(&temp);
 		return false;
 	}
 	temp->SetTokenOne(token_one);
 	temp->SetUsername(username);
+	temp->SetUID(uID);
 	temp->SetFileName(fileName);
 	temp->SetLocalPath(localPath);
 	temp->SetNetPath(netPath);

@@ -9,14 +9,21 @@ class MyUpLoadMission :
 {
 private:
 	enum ResponceType{
-		SUCCESS,
-		EXIST,
-		FAILED
+		SUCCESS,		//200
+		START,			//201
+		FAILED,			//203
+		CMDNOTVALID,	//300
+		FILENOTTOUCH,	//301
+		MD5NOTMATCH,	//403
+		SERVERERROR		//500
 	};
 private:
 	std::string fileName;
 	std::string localPath;
 	std::string netPath;
+	unsigned long long uID;
+
+	bool SendTouchCommand();	//create a new file in server
 
 	bool SendCommand();
 
@@ -24,6 +31,10 @@ private:
 public:
 	MyUpLoadMission();
 	virtual ~MyUpLoadMission();
+
+	void SetUID(unsigned long long uID) {
+		this->uID = uID;
+	}
 
 	void SetFileName(std::string &fn) {
 		fileName = fn;

@@ -47,12 +47,13 @@ public:
 
 	//发送下载文件请求
 	void PushGetCommand(std::string &uId) {
-		buffer->PutRecv(MyCommandBuilder::MakeGetCommand(uId));
+//		buffer->PutRecv(MyCommandBuilder::MakeGetCommand(uId));
+		buffer->PutRecvCommand(MyCommandBuilder::MakeGetCommand(std::string("50")));
 	}
 
 	//发送上传文件请求
 	void PushPutCommand(std::string name, std::string localPath, std::string netPath) {
-		buffer->PutRecv(MyCommandBuilder::MakePutCommand(name, localPath, netPath));
+		buffer->PutSend(MyCommandBuilder::MakePutCommand(name, localPath, netPath));
 	}
 	
 	//发送删除文件请求
@@ -67,7 +68,8 @@ public:
 
 	//发送查看目录下文件请求
 	void PushLsCommand(std::string &showAll, std::string &name, std::string &pathName, std::vector<std::string> &args) {
-		buffer->PutSend(MyCommandBuilder::MakeLsCommand(showAll, name, pathName, args));
+//		buffer->PutSend(MyCommandBuilder::MakeLsCommand(showAll, name, pathName, args));
+		buffer->PutSend(MyCommandBuilder::MakeLsCommand(std::string("0"), std::string(""), std::string("/"), args));
 	}
 
 	//创建文件夹请求

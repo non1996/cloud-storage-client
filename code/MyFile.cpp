@@ -1,6 +1,7 @@
 #include "MyFile.h"
+#include <string>
 
-
+#include<windows.h>
 
 MyFile::MyFile()
 {
@@ -30,6 +31,7 @@ bool MyFile::OpenRead()
 	file.open(name, std::ios_base::in | std::ios_base::binary);
 	file.seekg(0, std::ios_base::beg);
 	if (file.is_open()) {
+		Size(name, size);
 		return true;
 	}
 	return false;
@@ -104,12 +106,22 @@ bool MyFile::Read(const char *buf)
 
 bool MyFile::MakeDir(const char * name)
 {
-	std::string mkdir = "md";
-	mkdir += " ";
-	mkdir += name;
-	if (-1 == system(mkdir.c_str())) {
+//	std::string mkdir = "mkdir";
+//	mkdir += " ";
+//	mkdir += name;
+//	std::cout << mkdir << std::endl;
+
+//	if (-1 == system(mkdir.c_str())) {
+//		std::cout << "创建文件夹失败\n";
+//		return false;
+//	}
+//	std::cout << "创建文件夹成功\n";
+
+	if (0 == CreateDirectoryA(name, NULL)) {
+		std::cout << "创建文件夹失败\n";
 		return false;
 	}
+	std::cout << "创建文件夹成功\n";
 	return true;
 }
 
@@ -141,12 +153,18 @@ bool MyFile::CreateEmptyFile(const char * name, unsigned long long size)
 {
 	std::ofstream fout;
 	if (Exist(name)) {
+		std::cout << "文件已存在" << std::endl;
 		return false;
 	}
 	fout.open(name, std::ios_base::ate);
 	if (!fout.is_open()) {
 		return false;
 	}
+	if (size == 0) {
+		fout.close();
+		return true;
+	}
+
 	int alreadyW = 0;
 	char buf[1000];
 	memset(buf, 0, 1000);

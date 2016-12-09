@@ -54,7 +54,7 @@ void test(){
 			cout << "you are not log in\n";
 			if (param[0] == "log") {
 				if (param.size() == 3) {
-					controller->PushLogInCommand(std::string("forec"), std::string("TESTTHISPASSWORD"));
+					controller->PushLogInCommand(std::string("forec@bupt.edu.cn"), std::string("TESTTHISPASSWORD"));
 				}
 			}
 			continue;
@@ -62,14 +62,15 @@ void test(){
 
 		if (param[0] == "get") {
 			if (param.size() == 2) {
-				controller->PushGetCommand(param[1]);
+				controller->PushGetCommand(param[1]);//uID
 			}	
 			else {
 				std::cout << "wrong input\n";
 			}
 		}else if (param[0] == "put") {
 			if (param.size() == 4) {
-				controller->PushPutCommand(param[1], param[2], param[3]);
+//				controller->PushPutCommand(param[1], param[2], param[3]);	//文件名,文件路径，上传到的位置
+				controller->PushPutCommand("tttt.rar", "D:\\", "/");
 			}
 			else {
 				std::cout << "wrong input\n";

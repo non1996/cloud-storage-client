@@ -2,7 +2,7 @@
 #include "MyCommand.h"
 #include "MyControl.h"
 
-
+#include <cstdio>
 #include <exception>
 #include <vector>
 
@@ -27,11 +27,14 @@ void MyGetCommand::Execute(MyControl *c)
 
 void MyPutCommand::Execute(MyControl *c)
 {
-	c->GetNetWork()->NewMissionU(	fileName, 
-									localPath, 
-									netPath, 
-									c->GetSendRecv()->GetToken(), 
-									c->GetUser()->GetUsername());
+	if (ok) {
+		c->GetNetWork()->NewMissionU(fileName,
+			GetUID(),
+			localPath,
+			netPath,
+			c->GetSendRecv()->GetToken(),
+			c->GetUser()->GetUsername());
+	}
 }
 
 void MyDeleteCommand::Execute(MyControl *c)
@@ -71,23 +74,42 @@ void MyShareCommand::Execute(MyControl *)
 	std::cout << "haven't implement share command" << std::endl;
 }
 
+bool MyTouchCommand::GetServerResponse(const char * info, int len)
+{
+	if (len != 16) {
+		std::cout << "长度不对, len为:" << len << std::endl;
+		return false;
+	}
+	std::string res(info, len);
+	std::cout << "前8个字节\n";
+	for (int i = 0; i < 8; ++i) {
+		printf("%x ", (unsigned char)res[i]);
+	}
+	std::cout << std::endl;
+
+	unsigned long long resNum = MyEnCoder::BytesToUll(res.substr(0, 8));
+	if (resNum == 200) {
+		uId = MyEnCoder::BytesToUll(res.substr(8, 8));
+		std::cout << "创建文件成功，uid是:" << uId << std::endl;
+		isOk = true;
+		return true;
+	}
+	std::cout << "创建文件失败,状态码为:" << resNum << std::endl;
+	return false;
+}
+
 void MyTouchCommand::Execute(MyControl *c)
 {
 	if (type == "0") {
-		c->GetManager()->AddNormFile(uId, fileName, date, 0);
+//		c->GetManager()->AddNormFile(uId, fileName, date, 0);
 	}else if(type == "1"){
-		c->GetManager()->AddDirector(uId, fileName, date, 0);
+//		c->GetManager()->AddDirector(uId, fileName, date, 0);
 	}
 }
 
 void MyRenameCommand::Execute(MyControl *c)
 {
 	c->GetManager()->Rename(oldName, GetNewName());
-}
-
-void MyLogInCommand::GetServerResponse(const char * info, int len)
-{
-	token = std::string(info, len);
 }
 
 void MyLogInCommand::Execute(MyControl *c)

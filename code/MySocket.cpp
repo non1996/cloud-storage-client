@@ -2,8 +2,35 @@
 #include "MyEnCoder.h"
 #include <iostream>
 
+bool MySocket::ReceiveUntil(unsigned int until)
+{
+	int len;
+	for (;;) {
+		if (currentContentSize >= until) {	//当接收到足够数量的数据时告知可以读取
+			break;
+		}
+		if (extraBuf == 0) {	//判断是否有外加接收缓冲
+			//在buffer中已有的内容后面接收
+			len = recv(client, recvBuf + currentContentSize, MAX_BUF - currentContentSize, 0);
+		}
+		else{
+			len = recv(client, extraBuf + currentContentSize, exSize - currentContentSize, 0);
+		}
+		if (len <= 0) {
+			std::cout << "网络断开\n";
+			return false;
+		}
+		currentContentSize += (unsigned int)len;
+		std::cout << "当前缓冲区字符数:" << currentContentSize << std::endl;
+	}
+	return true;
+}
+
 MySocket::MySocket()
 {
+	extraBuf = 0;
+	exSize = 0;
+	currentContentSize = 0;
 }
 
 
@@ -25,6 +52,13 @@ bool MySocket::init(const char* ipAddr, int port)
 	return true;
 }
 
+void MySocket::SetExtraBuf(char * e, unsigned int size)
+{
+	extraBuf = e;
+	exSize = size;
+	std::cout << "创建额外缓冲,大小为:" << size << std::endl;
+}
+
 int MySocket::connect_to_srv()
 {
 	return connect(client, (SOCKADDR*)&addrSrv, sizeof(SOCKADDR));
@@ -39,7 +73,14 @@ void MySocket::disconnect()
 bool MySocket::Send(const char * buf, int len)
 {
 	int re;
+//	std::cout << "发送长度(socket): "<< len << std::endl;
+//	std::cout << std::endl;
+//	for (int i = 0; i < 32; ++i) {
+//		printf("%d ", (unsigned char)buf[len - 32 + i]);
+//	}
+//	std::cout << std::endl;
 	re = send(client, buf, len, 0);
+	
 	if (re == SOCKET_ERROR) {
 		return false;
 	}
@@ -61,12 +102,54 @@ bool MySocket::Receive(char** buf, int &len)
 bool MySocket::Receive(Packet & p)
 {
 	int len;
-	len = recv(client, recvBuf, MAX_BUF, 0);
+	if (extraBuf == 0) {
+		len = recv(client, recvBuf, MAX_BUF, 0);
+		if (len <= 0) {
+			return false;
+		}
+		p.buf = recvBuf;
+		p.len = len;
+		return true;
+	}
+	//如果设置了就用额外缓冲
+	std::cout << "使用额外缓冲\n";
+	len = recv(client, extraBuf, exSize, 0);
 	if (len <= 0) {
 		return false;
 	}
-	p.buf = recvBuf;
+	p.buf = extraBuf;
 	p.len = len;
+	return true;
+}
+
+bool MySocket::Read(std::string &recvr, unsigned int len)
+{
+	if (extraBuf == 0) {
+		for (int i = 0; i < 8; ++i) {
+			printf("%x ", (unsigned char)recvBuf[i]);
+		}
+		std::cout << "\n";
+
+		recvr.assign(recvBuf, len);
+		currentContentSize -= len;
+		memcpy(recvBuf, recvBuf + len, currentContentSize);
+		return true;
+	}
+	//如果设置了就用额外缓冲
+	std::cout << "额外\n";
+//	for (int i = 0; i < 8; ++i) {
+//		printf("%x ", (unsigned char)extraBuf[i]);
+//	}
+//	std::cout << "\n";
+	recvr.assign(extraBuf, len);
+
+//	for (int i = 0; i < 8; ++i) {
+//		printf("%x ", (unsigned char)recvr[i]);
+//	}
+//	std::cout << "\n";
+
+	currentContentSize -= len;
+	memcpy(extraBuf, extraBuf + len, currentContentSize);
 	return true;
 }
 
@@ -112,10 +195,9 @@ bool MySocket::RecvBytes(std::string & toRecv, const char * key)
 		return false;
 	}
 	totalLength = MyEnCoder::BytesToUll(std::string(p.buf, p.len));
-	std::cout << totalLength << std::endl;
-	//	std::cout << "总明文长度: " << totalLength << std::endl;
+	std::cout << "总明文长度: " << totalLength << std::endl;
 	for (;;) {
-		if (totalLength == 0) {
+		if (totalLength <= 0) {
 			std::cout << "return recv\n";
 			return true;
 		}
@@ -126,12 +208,67 @@ bool MySocket::RecvBytes(std::string & toRecv, const char * key)
 		std::string str_p(p.buf, p.len);
 		//获得该包明文长度
 		plength = MyEnCoder::BytesToUll(str_p.substr(0, 8));
+		//包密文长度+16
 		elength = MyEnCoder::BytesToUll(str_p.substr(8, 8));
+		elength -= 16;
+		std::cout << "包长:" << str_p.size() << std::endl;
+		std::cout << "包明文长度为：" << plength << std::endl;
+		std::cout << "包密文长度:" << elength << std::endl;
 		//解密
-		temp = MyEnCoder::Instance()->Decode(str_p.substr(16).c_str(), key, str_p.substr(16).size());
+		temp = MyEnCoder::Instance()->Decode(str_p.substr(16).c_str(), key, /*str_p.substr(16).size()*/elength);
 		totalLength -= plength;
-		std::cout << "total length: "<< totalLength << std::endl;
+		std::cout << "total length left: "<< totalLength << std::endl;
 		toRecv += temp;
+	}
+	return true;
+}
+
+bool MySocket::_RecvBytes(std::string & toRecv, const char * key)
+{
+	std::string str_totalLength;
+	unsigned long long totalLength = 0;
+	unsigned long long plength = 0;
+	unsigned long long elength = 0;
+	std::string plainText;
+
+	if (false == ReceiveUntil(8)) {
+		std::cout << "未收到8字节\n";
+		return false;
+	}
+	//获取要接收的明文的总长度
+	Read(str_totalLength, 8);
+	totalLength = MyEnCoder::BytesToUll(str_totalLength);
+	std::cout << "总明文长度: " << totalLength << std::endl;
+	
+	for (;;) {
+		if (totalLength == 0) {
+			std::cout << "接收结束\n";
+			return true;
+		}
+		if (false == ReceiveUntil(16)) {
+			std::cout << "接收不到16个字节的长度字段\n";
+			return false;
+		}
+		std::string strLenInfo;
+		Read(strLenInfo, 16);
+		//获得该包明文长度
+		plength = MyEnCoder::BytesToUll(strLenInfo.substr(0, 8));
+		//包密文长度+16
+		elength = MyEnCoder::BytesToUll(strLenInfo.substr(8, 8));
+		elength -= 16;
+		std::cout << "包明文长度为：" << plength << std::endl;
+		std::cout << "包密文长度:" << elength << std::endl;
+		if (false == ReceiveUntil(elength)) {
+			std::cout << "接收不到足够长的密文\n";
+			return false;
+		}
+		std::string code;
+		Read(code, elength);
+		//解密
+		plainText = MyEnCoder::Instance()->Decode(code.c_str(), key, elength);
+		totalLength -= plength;
+		std::cout << "total length left: " << totalLength << std::endl;
+		toRecv += plainText;
 	}
 	return true;
 }
@@ -139,4 +276,6 @@ bool MySocket::RecvBytes(std::string & toRecv, const char * key)
 void MySocket::Release()
 {
 	disconnect();
+	delete[] extraBuf;
+	extraBuf = 0;
 }

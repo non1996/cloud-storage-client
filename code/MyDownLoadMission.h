@@ -8,6 +8,8 @@ class MyDownLoadMission :
 	public MyMission
 {
 private:
+	static std::string downloadPath;
+private:
 	bool SendCommand();
 
 	bool RecvFileNum(int &num);
@@ -22,5 +24,7 @@ public:
 
 	virtual void Execute();
 };
+
+
 
 #endif // !MYDOWNLOADMISSION_H_

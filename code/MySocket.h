@@ -22,23 +22,35 @@ private:
 	SOCKET client;
 	SOCKADDR_IN addrSrv;//·þÎñÆ÷µØÖ·
 	char recvBuf[MAX_BUF];
+
+
+	unsigned int currentContentSize;
+	
+	char* extraBuf;
+	unsigned int exSize;
+
 public:
 	MySocket();
 	~MySocket();
 
 	bool init(const char* ipAddr, int port);
+
+	void SetExtraBuf(char* e, unsigned int size);
+
 	int connect_to_srv();
 	void disconnect();
-//	void send_data(std::string & s);
-//	int receive_data(std::string & r);
 
 	bool Send(const char* buf, int len);
 	bool Receive(char** buf, int &len);
 	bool Receive(Packet &p);
+	bool Read(std::string &recvr, unsigned int len);
+	
+	bool ReceiveUntil(unsigned int until);
 
 	//use to suit server
 	bool SendBytes(std::string toSend, const char* key);
 	bool RecvBytes(std::string &toRecv, const char* key);
+	bool _RecvBytes(std::string &toRecv, const char* key);
 
 	void Release();
 };

@@ -135,7 +135,7 @@ public:
 
 	//创建新的下载或上传任务
 	bool NewMissionD(std::string &uID, std::string &token_one, std::string &username, std::string &password);
-	bool NewMissionU(std::string &fileName, std::string &localPath, std::string &netPath, std::string &token_one, std::string &username);
+	bool NewMissionU(std::string &fileName, unsigned long long uID, std::string &localPath, std::string &netPath, std::string &token_one, std::string &username);
 
 	void CloseManager();
 	#pragma endregion

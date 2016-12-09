@@ -32,6 +32,7 @@ protected:
 	std::string EncodeUT(std::string &ut, unsigned long long usize);
 
 	bool RecvToWriter();
+	bool _RecvToWriter();
 
 	bool SendFromReader();
 
@@ -43,7 +44,8 @@ public:
 	bool InitSocket(const char* ipAddr, int port);
 	//设置文件名和文件大小
 	bool InitFile(const char* fileName, unsigned long long size);
-	
+	bool InitFile();
+
 	void SetUsername(std::string &username) {
 		this->username = username;
 	}

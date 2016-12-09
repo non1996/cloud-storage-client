@@ -27,7 +27,7 @@ public:
 	//	these methods do translate work, 
 	//	so that command and string can change to each other
 	//----------------------------------------
-	virtual void GetServerResponse(const char* info, int len) = 0;
+	virtual bool GetServerResponse(const char* info, int len) = 0;
 
 //	virtual bool ToComand(std::string &s)
 
@@ -45,10 +45,61 @@ public:
 	}
 	virtual void Execute(MyControl*);
 
-	virtual void GetServerResponse(const char* info, int len) {}
+	virtual bool GetServerResponse(const char* info, int len) { return true; }
 
 	virtual std::string ToString() {
 		return "";
+	}
+};
+
+class MyTouchCommand : public MyCommand {
+private:
+	unsigned long long uId;
+	std::string fileName;
+	std::string pathName;
+	std::string type;
+	std::string date;
+	bool isOk;
+public:
+	MyTouchCommand() {}
+	MyTouchCommand(std::string name, std::string pathName) {
+		fileName = name;
+		this->pathName = pathName;
+		SetType("0");							//0表示文件，1表示文件夹
+		isOk = false;
+	}
+
+	void SetType(std::string type) {
+		this->type = type;
+	}
+
+	unsigned long long GetUID() {
+		return uId;
+	}
+
+	std::string &GetName() {
+		return fileName;
+	}
+
+	std::string &GetPath() {
+		return pathName;
+	}
+
+	std::string &GetDate() {
+		return date;
+	}
+
+	virtual bool GetServerResponse(const char* info, int len);
+
+	virtual void Execute(MyControl*);
+
+	virtual std::string ToString() {
+		std::stringstream ss;
+		ss << "touch" << "+"
+			<< fileName << "+"
+			<< pathName << "+"
+			<< type;
+		return ss.str();
 	}
 };
 
@@ -58,20 +109,34 @@ private:
 	std::string fileName;
 	std::string localPath;
 	std::string netPath;
-	
+	MyTouchCommand touch;
+	bool ok;
 public:
 	MyPutCommand(std::string name, std::string localPath, std::string netPath) {
 		fileName = name;
 		this->localPath = localPath;
 		this->netPath = netPath;
+		touch = MyTouchCommand(fileName, netPath);
+		ok = false;
+	}
+
+	unsigned long long GetUID() {
+		return touch.GetUID();
 	}
 
 	virtual void Execute(MyControl*);
 
-	virtual void GetServerResponse(const char* info, int len) {}
+	virtual bool GetServerResponse(const char* info, int len) { 
+		if (touch.GetServerResponse(info, len) == true) {
+			ok = true;
+			return true;
+		}
+		return false;
+	}
 
-	virtual std::string ToString() {
-		return "";
+	virtual std::string ToString() {				
+		//before put i should touch first
+		return touch.ToString();
 	}
 };
 
@@ -88,7 +153,7 @@ public:
 
 	virtual void Execute(MyControl*);
 
-	virtual void GetServerResponse(const char* info, int len) {}
+	virtual bool GetServerResponse(const char* info, int len) { return true; }
 
 	virtual std::string ToString() {
 		std::stringstream ss;
@@ -113,7 +178,7 @@ public:
 
 	virtual void Execute(MyControl*);
 
-	virtual void GetServerResponse(const char* info, int len) {}
+	virtual bool GetServerResponse(const char* info, int len) { return true; }
 
 	virtual std::string ToString() {
 		std::stringstream ss;
@@ -158,14 +223,12 @@ public:
 		}
 	}
 
-	virtual void GetServerResponse(const char* info, int len) {
+	virtual bool GetServerResponse(const char* info, int len) {
+		std::cout << "目录信息为:" << std::endl;
 		std::string temp(info, len);
 		std::vector<std::string> filesInfo;
-//		split(temp, '\n', filesInfo);
 		std::cout << temp << std::endl;
-//		for (int i = 0; i < filesInfo.size(); ++i) {
-//			split(filesInfo[i], '+', content);
-//		}
+		return true;
 	}
 
 	virtual void Execute(MyControl*);
@@ -183,54 +246,7 @@ public:
 };
 
 //创建文件或文件夹
-class MyTouchCommand : public MyCommand {
-private:
-	std::string uId;
-	std::string fileName;
-	std::string pathName;
-	std::string type;
-	std::string date;
 
-public:
-	MyTouchCommand(){}
-	MyTouchCommand(std::string name, std::string pathName) {
-		fileName = name;
-		this->pathName = pathName;
-		SetType("0");							//0表示文件，1表示文件夹
-	}
-
-	void SetType(std::string type) {
-		this->type = type;
-	}
-
-	std::string &GetName() {
-		return fileName;
-	}
-
-	std::string &GetPath() {
-		return pathName;
-	}
-
-	std::string &GetDate() {
-		return date;
-	}
-
-	virtual void GetServerResponse(const char* info, int len) {
-		uId = std::string(info, len / 2);
-		date = std::string(info, len / 2 + 1, len / 2);		//格式待商议
-	}
-
-	virtual void Execute(MyControl*);
-
-	virtual std::string ToString() {
-		std::stringstream ss;
-		ss << "touch" << "+"
-			<< pathName << "+"
-			<< fileName << "+"
-			<< type;
-		return ss.str();
-	}
-};
 
 //创建文件夹,调用touch
 class MyMkDirCommand : public MyCommand {
@@ -242,8 +258,8 @@ public:
 		t.SetType("1");										//1表示文件夹
 	}
 
-	virtual void GetServerResponse(const char* info, int len) {
-		t.GetServerResponse(info, len);
+	virtual bool GetServerResponse(const char* info, int len) {
+		return t.GetServerResponse(info, len);
 	}
 
 	virtual void Execute(MyControl*);
@@ -267,7 +283,7 @@ public:
 
 	virtual void Execute(MyControl*);
 
-	virtual void GetServerResponse(const char* info, int len) {}
+	virtual bool GetServerResponse(const char* info, int len) { return true; }
 
 	virtual std::string ToString() {
 		std::stringstream ss;
@@ -299,7 +315,7 @@ public:
 
 	virtual void Execute(MyControl*);
 
-	virtual void GetServerResponse(const char* info, int len) {}
+	virtual bool GetServerResponse(const char* info, int len) { return true; }
 
 	virtual std::string ToString() {
 		std::stringstream ss;
@@ -338,7 +354,7 @@ public:
 
 	virtual void Execute(MyControl*);
 
-	virtual void GetServerResponse(const char* info, int len) {}
+	virtual bool GetServerResponse(const char* info, int len) { return true; }
 
 	virtual std::string ToString() {
 		std::stringstream ss;
@@ -375,7 +391,10 @@ public:
 		}
 	}
 
-	virtual void GetServerResponse(const char* info, int len);
+	virtual bool GetServerResponse(const char* info, int len) {
+		token = std::string(info, len);
+		return true;
+	}
 		
 
 	virtual void Execute(MyControl*);
@@ -390,8 +409,9 @@ private:
 public:
 	MyMessageCommand(){}
 	
-	virtual void GetServerResponse(const char* info, int len) {
+	virtual bool GetServerResponse(const char* info, int len) {
 		content = std::string(info, len);
+		return true;
 	}
 
 	virtual void Execute(MyControl*);
@@ -456,5 +476,3 @@ public:
 	}
 };
 #endif // !MYCOMMAND_H_ 
-
-
