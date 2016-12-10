@@ -8,14 +8,20 @@ MyController::MyController()
 
 MyController::~MyController()
 {
-	control->SetFinish();
-	Sleep(1000);
-	control->Close();
-	std::cout << "control thread close\n";
+//	control->SetFinish();
+//	Sleep(1000);
+//	control->Close();
+//	std::cout << "control thread close\n";
 	Cleaner::Release<MyControl*>(&control);
-	
 	Cleaner::Release<MyCommandBuffer*>(&buffer);
 	std::cout << "buffer clear\n";
+}
+
+void MyController::Close()
+{
+	control->CloseAllTransmit();
+	control->Close();
+	std::cout << "控制线程退出\n";
 }
 
 MyController * MyController::Instance()

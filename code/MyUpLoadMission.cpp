@@ -121,6 +121,7 @@ void MyUpLoadMission::Execute()
 			GetSocket()->RecvBytes(res, GetToken().c_str());
 			std::cout << "½á¹ûÂë:" << MyEnCoder::BytesToUll(res) << std::endl;
 		}
+		SetFinish();
 		GetSocket()->disconnect();
 		GetFile()->Close();
 		return;

@@ -22,6 +22,8 @@ private:
 	//---------------------------------------------------------
 	MyCommandBuffer* buffer;		
 	MyCommand* cmd = 0;	
+
+	bool isQuit;
 private:
 	MySendRecvThread();
 

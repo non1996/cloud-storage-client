@@ -132,6 +132,7 @@ void MyDownLoadMission::Execute()
 		}
 	}
 	std::cout << "trans finish\n";
+	SetFinish();
 	GetSocket()->disconnect();
 	GetFile()->Close();
 }

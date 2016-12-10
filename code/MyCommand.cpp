@@ -19,21 +19,33 @@ MyCommand::~MyCommand()
 
 void MyGetCommand::Execute(MyControl *c)
 {
-	c->GetNetWork()->NewMissionD(	uId,
-									c->GetSendRecv()->GetToken(),
-									c->GetUser()->GetUsername(),
-									c->GetUser()->GetPassword());
+//	c->GetNetWork()->NewMissionD(	uId,
+//									c->GetSendRecv()->GetToken(),
+//									c->GetUser()->GetUsername(),
+//									c->GetUser()->GetPassword());
+	c->NewMissionD(	uId,
+					c->GetSendRecvToken(),
+					c->GetUserNameM(),
+					c->GetPassword());
 }
 
 void MyPutCommand::Execute(MyControl *c)
 {
+//	if (ok) {
+//		c->GetNetWork()->NewMissionU(fileName,
+//			GetUID(),
+//			localPath,
+//			netPath,
+//			c->GetSendRecv()->GetToken(),
+//			c->GetUser()->GetUsername());
+//	}
 	if (ok) {
-		c->GetNetWork()->NewMissionU(fileName,
-			GetUID(),
-			localPath,
-			netPath,
-			c->GetSendRecv()->GetToken(),
-			c->GetUser()->GetUsername());
+		c->NewMissionU(	fileName,
+						GetUID(), 
+						localPath,
+						netPath,
+						c->GetSendRecvToken(),
+						c->GetUserNameM());
 	}
 }
 
@@ -114,11 +126,14 @@ void MyRenameCommand::Execute(MyControl *c)
 
 void MyLogInCommand::Execute(MyControl *c)
 {
-	c->GetUser()->LogIn(username, password);
-	if(token == c->GetNetWork()->GetSocket()->GetToken()){
-		c->GetUser()->LogIn(username, password);			//record the username and password
-		c->GetNetWork()->InitMessageSocket(token, username);//create recv thread
-		c->GetNetWork()->StartMessageSocket();
+//	c->GetUser()->LogIn(username, password);
+	if(token == c->GetSendRecvToken()){
+		//c->GetUser()->LogIn(username, password);			//record the username and password
+		//c->GetNetWork()->InitMessageSocket(token, username);//create recv thread
+		//c->GetNetWork()->StartMessageSocket();
+		c->LogIn(username, password);
+		c->InitMessageSocket(token, username);
+		c->StartMessageSocket();
 		std::cout << "connect to server-------------------log in command\n";
 	}
 }

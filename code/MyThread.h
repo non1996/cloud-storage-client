@@ -34,13 +34,19 @@ public:
 		return true;
 	}
 
-	bool Close() {
+	bool _Close() {
 		if (IsStateClose()) {
 			return true;
 		}
 		CloseHandle(HThread);
 		std::cout << "this thread is closed\n";
 		SetStateClose();
+		return true;
+	}
+
+	bool Close() {		//强行终止线程
+		TerminateThread(HThread, 0);
+		WaitForSingleObject(HThread, INFINITE);
 		return true;
 	}
 

@@ -107,6 +107,8 @@ public:
 		buffer->PutSend(MyCommandBuilder::MakeLogInCommand(un, pw));
 	}
 
+	void Close();
+
 	static MyController* Instance();
 	static void Release();
 };

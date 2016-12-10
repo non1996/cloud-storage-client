@@ -70,10 +70,9 @@ public:
 	bool Cancel(int pos);
 	bool CancelAll();
 
-	//程序结束时调用，终止所有任务
-	bool CloseAll();
-	//关闭所有线程
-	bool CloseAllThread();
+	//程序退出时终止所有未传输完的线程
+	void CloseAllThread();
+
 #pragma endregion
 
 	void Release();

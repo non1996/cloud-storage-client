@@ -50,7 +50,7 @@ void test(){
 			continue;
 		}
 
-		if (!controller->GetControl()->GetUser()->IsLogIn()) {
+		if (!controller->GetControl()->IsLogIn()) {
 			cout << "you are not log in\n";
 			if (param[0] == "log") {
 				if (param.size() == 3) {
@@ -145,6 +145,6 @@ void test(){
 			cout << "wrong input\n";
 		}
 	}
-
+	controller->Close();
 	controller->Release();
 }

@@ -97,31 +97,24 @@ bool MyMissionManager::CancelAll()
 	return false;
 }
 
-bool MyMissionManager::CloseAll()
+void MyMissionManager::CloseAllThread()
 {
 	for (int i = 0; i < missionList.size(); ++i) {
-		missionList[i]->SetFinish();
+		if (!missionList[i]->IsFinish()) {
+			missionList[i]->Close();
+		}
 	}
-	return true;
-}
-
-bool MyMissionManager::CloseAllThread()
-{
-	for (int i = 0; i < missionList.size(); ++i) {
-		missionList[i]->Close();
-	}
-	return true;
 }
 
 void MyMissionManager::Release()
 {
-	for (int i = 0; i < missionList.size(); ++i) {		
+/*	for (int i = 0; i < missionList.size(); ++i) {		
 		missionList.at(i)->Close();						//关闭所有的传输线程
 		missionList.at(i)->SaveProcess();				//保存进度
-	}
+	}*/
 	for (int i = 0; i < missionList.size(); ++i) {
 		missionList.at(i)->Release();
 		Cleaner::Delete<MyMission*>(&(missionList.at(i)));
-	}	
+	}
 }
 
