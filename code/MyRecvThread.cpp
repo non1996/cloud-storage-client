@@ -70,7 +70,7 @@ bool MyRecvThread::Communicate()
 		temp = MyCommandBuilder::MakeMessageCommand();
 		std::cout << "生成消息指令\n";
 		temp->GetServerResponse(recv.c_str(), recv.size());
-		while (false == buffer->PutRecvCommand(temp));
+		buffer->PutRecvCommand(temp);
 	}
 	return true;
 }

@@ -207,9 +207,7 @@ void MyControl::Execute()
 {
 	MyCommand* temp = 0;
 	while (!IsFinish()) {
-		if (false == buffer->GetRecvCommand(&temp)) {
-			continue;
-		}
+		buffer->GetRecvCommand(&temp);
 		temp->Execute(this);
 		Cleaner::Delete<MyCommand*>(&temp);
 	}

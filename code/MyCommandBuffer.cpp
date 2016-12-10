@@ -1,8 +1,18 @@
 #include "MyCommandBuffer.h"
+#include "MyThread.h"
 
 MyCommandBuffer* MyCommandBuffer::instance = 0;
 
 MyCommandBuffer::MyCommandBuffer(){
+	recvMutex = new MyMutex();
+	sendMutex = new MyMutex();
+
+	recvEmpty = new MySemaphore(maxBufLen, maxBufLen);
+	sendEmpty = new MySemaphore(maxBufLen, maxBufLen);
+
+	recvFull = new MySemaphore(0, maxBufLen);
+	sendFull = new MySemaphore(0, maxBufLen);
+
 	recvLock = false;
 	sendLock = false;
 }
@@ -19,6 +29,12 @@ MyCommandBuffer::~MyCommandBuffer(){
 		Cleaner::Delete<MyCommand*>(&temp);
 		sendQueue.pop();
 	}*/
+	Cleaner::Delete<MyMutex*>(&recvMutex);
+	Cleaner::Delete<MyMutex*>(&sendMutex);
+	Cleaner::Delete<MySemaphore*>(&recvEmpty);
+	Cleaner::Delete<MySemaphore*>(&sendEmpty);
+	Cleaner::Delete<MySemaphore*>(&recvFull);
+	Cleaner::Delete<MySemaphore*>(&sendFull);
 }
 
 void MyCommandBuffer::ClearSendQueue()
@@ -70,7 +86,7 @@ void MyCommandBuffer::PutRecv(MyCommand* c){
 
 bool MyCommandBuffer::GetSendCommand(MyCommand ** cmd)
 {
-	if (IsSendQueEmpty()) {
+/*	if (IsSendQueEmpty()) {
 		return false;
 	}
 	if (!TestAndLockS()) {
@@ -78,22 +94,35 @@ bool MyCommandBuffer::GetSendCommand(MyCommand ** cmd)
 	}	
 	GetSend(cmd);
 	UnlockSend();
+	return true;*/
+	sendFull->Wait();
+	sendMutex->Wait();
+	GetSend(cmd);
+	sendMutex->Signal();
+	sendEmpty->Signal();
 	return true;
 }
 
 bool MyCommandBuffer::PutSendCommand(MyCommand * cmd)
 {
-	if (!TestAndLockS()) {
+/*	if (!TestAndLockS()) {
 		return false;
 	}
 	PutSend(cmd);
 	UnlockSend();
+	return true;*/
+
+	sendEmpty->Wait();
+	sendMutex->Wait();
+	PutSend(cmd);
+	sendMutex->Signal();
+	sendFull->Signal();
 	return true;
 }
 
 bool MyCommandBuffer::GetRecvCommand(MyCommand ** cmd)
 {
-	if (IsRecvQueEmpty()) {
+/*	if (IsRecvQueEmpty()) {
 		return false;
 	}
 	if (!TestAndLockR()) {
@@ -101,16 +130,30 @@ bool MyCommandBuffer::GetRecvCommand(MyCommand ** cmd)
 	}
 	GetRecv(cmd);
 	UnlockRecv();
+	return true;*/
+
+	recvFull->Wait();
+	recvMutex->Wait();
+	GetRecv(cmd);
+	recvMutex->Signal();
+	recvEmpty->Signal();
 	return true;
 }
 
 bool MyCommandBuffer::PutRecvCommand(MyCommand * cmd)
 {
-	if (!TestAndLockR()) {
+/*	if (!TestAndLockR()) {
 		return false;
 	}
 	PutRecv(cmd);
 	UnlockRecv();
+	return true;*/
+
+	recvEmpty->Wait();
+	recvMutex->Wait();
+	PutRecv(cmd);
+	recvMutex->Signal();
+	recvFull->Signal();
 	return true;
 }
 

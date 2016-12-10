@@ -8,6 +8,9 @@
 #include <queue>
 #include <string>
 
+
+class MySemaphore;
+class MyMutex;
 //----------------------------------------------
 //	This class maintains two queue: receive commands, and send commands. 
 //	1.Controler put command into queue, sender get command and send it to the server
@@ -16,17 +19,24 @@
 //	This class is a singleton 
 //----------------------------------------------
 class MyCommandBuffer{
+
+private:
+	static const int maxBufLen = 10;
+
 private:
 	static MyCommandBuffer* instance;
 
 	#pragma region Command Queue
 	std::queue<MyCommand*> recvQueue;
+	MyMutex* recvMutex;
+	MySemaphore* recvEmpty, *recvFull;
 
 	std::queue<MyCommand*> sendQueue;
-	
-	bool recvLock, sendLock;
-	
+	MyMutex* sendMutex;
+	MySemaphore* sendEmpty, *sendFull;
 	#pragma endregion
+
+	bool recvLock, sendLock;//·ÏÆú
 
 protected:
 	MyCommandBuffer();
@@ -74,8 +84,8 @@ public:
 
 	#pragma endregion
 	
-	#pragma region LockControl
-	bool TestAndLockR() {
+	#pragma region LockControl		//ÒÑ·ÏÆú
+	bool TestAndLockR() {	
 		if (IsRecvLock()) {
 			return false;
 		}

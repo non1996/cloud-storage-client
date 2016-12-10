@@ -53,58 +53,58 @@ public:
 
 	//发送上传文件请求
 	void PushPutCommand(std::string name, std::string localPath, std::string netPath) {
-		buffer->PutSend(MyCommandBuilder::MakePutCommand(name, localPath, netPath));
+		buffer->PutSendCommand(MyCommandBuilder::MakePutCommand(name, localPath, netPath));
 	}
 	
 	//发送删除文件请求
 	void PushDeleteCommand(std::string &uId, std::string &name) {
-		buffer->PutSend(MyCommandBuilder::MakeDeleteCommand(uId, name));
+		buffer->PutSendCommand(MyCommandBuilder::MakeDeleteCommand(uId, name));
 	}
 
 	//发送获取别人文件请求
 	void PushForkCommand(std::string &uId, std::string &password, std::string &newPath) {
-		buffer->PutSend(MyCommandBuilder::MakeForkCommand(uId, password, newPath));
+		buffer->PutSendCommand(MyCommandBuilder::MakeForkCommand(uId, password, newPath));
 	}
 
 	//发送查看目录下文件请求
 	void PushLsCommand(std::string &showAll, std::string &name, std::string &pathName, std::vector<std::string> &args) {
-//		buffer->PutSend(MyCommandBuilder::MakeLsCommand(showAll, name, pathName, args));
-		buffer->PutSend(MyCommandBuilder::MakeLsCommand(std::string("0"), std::string(""), std::string("/"), args));
+//		buffer->PutSendCommand(MyCommandBuilder::MakeLsCommand(showAll, name, pathName, args));
+		buffer->PutSendCommand(MyCommandBuilder::MakeLsCommand(std::string("0"), std::string(""), std::string("/"), args));
 	}
 
 	//创建文件夹请求
 	void PushMkdirCommand(std::string &name, std::string &pathName) {
-		buffer->PutSend(MyCommandBuilder::MakeMkDirCommand(name, pathName));
+		buffer->PutSendCommand(MyCommandBuilder::MakeMkDirCommand(name, pathName));
 	}
 
 	//复制文件请求
 	void PushCopyCommand(std::string &uId, std::string &newPath) {
-		buffer->PutSend(MyCommandBuilder::MakeCopyCommand(uId, newPath));
+		buffer->PutSendCommand(MyCommandBuilder::MakeCopyCommand(uId, newPath));
 	}
 
 	//移动文件请求
 	void PushMoveCommand(std::string &uId, std::string &newName, std::string &newPath) {
-		buffer->PutSend(MyCommandBuilder::MakeMoveCommand(uId, newName, newPath));
+		buffer->PutSendCommand(MyCommandBuilder::MakeMoveCommand(uId, newName, newPath));
 	}
 
 	//创建文件请求
 	void PushTouchCommand(std::string &name, std::string &pathName) {
-		buffer->PutSend(MyCommandBuilder::MakeTouchCommand(name, pathName));
+		buffer->PutSendCommand(MyCommandBuilder::MakeTouchCommand(name, pathName));
 	}
 
 	//重命名文件
 	void PushRenameCommand(std::string &uId, std::string &oldName, std::string &newName, std::string &path) {
-		buffer->PutSend(MyCommandBuilder::MakeRenameCommand(uId, oldName, newName, path));
+		buffer->PutSendCommand(MyCommandBuilder::MakeRenameCommand(uId, oldName, newName, path));
 	}
 
 	//共享文件
 	void PushShareCommand(std::string &uId, std::string &priv) {
-		buffer->PutSend(MyCommandBuilder::MakeShareCommand(uId, priv));
+		buffer->PutSendCommand(MyCommandBuilder::MakeShareCommand(uId, priv));
 	}
 
 	void PushLogInCommand(std::string &un, std::string &pw) {
 		std::cout << un << " " << pw << std::endl;
-		buffer->PutSend(MyCommandBuilder::MakeLogInCommand(un, pw));
+		buffer->PutSendCommand(MyCommandBuilder::MakeLogInCommand(un, pw));
 	}
 
 	void Close();

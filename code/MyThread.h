@@ -103,6 +103,33 @@ public:
 	#pragma endregion
 };
 
+class MySemaphore
+{
+private:
+	HANDLE semaphore;
+public:
+	MySemaphore(int init, int max);	//信号量初始值, 信号量最大值
+	~MySemaphore() { CloseHandle(semaphore); }
+
+	void Wait();
+	void Signal();
+};
+
+class MyMutex
+{
+private:
+	HANDLE mutex;
+public:
+	MyMutex() {
+		mutex = CreateMutex(NULL, FALSE, NULL);
+	}
+	~MyMutex() {
+		CloseHandle(mutex);
+	}
+
+	void Wait();
+	void Signal();
+};
 #endif // !MYTHREAD_H_
 
 

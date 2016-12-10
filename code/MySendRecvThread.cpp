@@ -26,7 +26,7 @@ std::string MySendRecvThread::GetCertificationInfo()
 {
 	std::string temp;
 
-	while (buffer->GetSendCommand(&cmd) == false);	//等待用户输入用户名和密码
+	buffer->GetSendCommand(&cmd);	//等待用户输入用户名和密码
 	temp = cmd->ToString();
 	if (temp.size() <= 8) {
 		return "";
@@ -55,7 +55,7 @@ bool MySendRecvThread::InfoRight()
 		return false;
 	}
 	cmd->GetServerResponse(rcv.c_str(), rcv.size());
-	while (buffer->PutRecvCommand(cmd) == false);
+	buffer->PutRecvCommand(cmd);
 	std::cout << "put commmand" << std::endl;
 	return true;
 }
@@ -64,9 +64,7 @@ bool MySendRecvThread::Communicate()
 {
 	std::string readBuf;
 	while (!IsFinish()) {
-		if (false == buffer->GetSendCommand(&cmd)) {
-			continue;
-		}
+		buffer->GetSendCommand(&cmd);
 		std::cout << "send ----" << cmd->ToString() << std::endl;
 		if (GetSocket()->SendBytes(cmd->ToString(), GetToken().c_str()) == false) {
 			SetLogIn(false);
@@ -80,7 +78,7 @@ bool MySendRecvThread::Communicate()
 		}
 		std::cout << "recv finish\n";
 		cmd->GetServerResponse(readBuf.c_str(), readBuf.size());
-		while (false == buffer->PutRecvCommand(cmd));
+		buffer->PutRecvCommand(cmd);
 		std::cout << "put finish\n";
 	}
 	return true;
