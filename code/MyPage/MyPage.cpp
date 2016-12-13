@@ -1,3 +1,4 @@
+# pragma execution_character_set("utf-8")
 #include "MyPage.h"
 #include "MyFileBrowserPage/MyFileBrowserPage.h"
 #include "MyMissionPage/MyMissionPage.h"

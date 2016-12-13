@@ -69,7 +69,7 @@ MyDownLoadMission::~MyDownLoadMission()
 void MyDownLoadMission::Execute()
 {
 	//	connect to server
-	GetSocket()->SetExtraBuf(new char[4096 * 1024], 4096 * 1024);
+	GetSocket()->SetExtraBuf(new char[4096 * 1024 + 1], 4096 * 1024);
 
 	MyMission::Execute();
 
@@ -89,7 +89,8 @@ void MyDownLoadMission::Execute()
 	if (!InitFile()) {
 		std::cout << "文件初始化失败" << std::endl;
 	}
-
+	std::ofstream fout("test.txt", std::ios_base::ate);
+	fout << "总文件数:" << num << std::endl;
 	for (int i = 0; i < num; ++i) {
 		std::string name;
 		std::string t_type;
@@ -105,7 +106,7 @@ void MyDownLoadMission::Execute()
 		if (false == GetSocket()->RecvBytes(t_type, GetToken().c_str())) {	//8个字节
 			std::cout << "获取文件类型失败" << std::endl;
 			GetSocket()->disconnect();
-			return;
+			break;
 		}
 		type = MyEnCoder::BytesToUll(t_type);
 		if (type == 1) {				//如果是文件夹，则创建并进入下一个循环
@@ -113,6 +114,7 @@ void MyDownLoadMission::Execute()
 			if (true == MyFile::MakeDir((downloadPath + name).c_str())) {
 				std::cout << "文件夹创建成功\n";
 			}
+			fout << i << std::endl;
 			continue;
 		}
 		else if(type == 0){			//, 如果是文件，则接收
@@ -130,7 +132,10 @@ void MyDownLoadMission::Execute()
 		else {
 			std::cout << "无效的文件类型:" << type << std::endl;
 		}
+		fout << i << std::endl;
 	}
+	CompleteChange();
+	Sleep(1000);
 	std::cout << "trans finish\n";
 	SetFinish();
 	GetSocket()->disconnect();

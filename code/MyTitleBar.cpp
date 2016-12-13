@@ -1,3 +1,4 @@
+# pragma execution_character_set("utf-8")
 #include "MyTitleBar.h"
 
 #include <QLabel>
@@ -16,6 +17,7 @@ MyTitleBar::MyTitleBar(QWidget *parent)
     createLayout();
 
     setButtonStyle();
+
     connect(lpCloseButton, SIGNAL(clicked()), parent, SLOT(close()));
     connect(lpMinimizeButton, SIGNAL(clicked()), this, SLOT(showSmall()));
 }
@@ -35,6 +37,7 @@ void MyTitleBar::createWidget(){
 
     lpTitleLabel->setText("¶¥µãÔÆ");
     lpTitleLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	lpTitleLabel->setStyleSheet("QLabel{color:rgb(217, 217, 217);font: bold 14px;}");
 
     lpMinimizeButton->setFixedSize(27, 22);
     lpMaximizeButton->setFixedSize(27, 22);
@@ -69,7 +72,7 @@ void MyTitleBar::createLayout()
 
 void MyTitleBar::setButtonStyle()
 {
-    setStyleSheet("QPushButton{background-color: rgb(1, 195, 255);"
+    setStyleSheet("QPushButton{background-color: rgb(57, 63, 63);"
                   "color: rgb(0, 0, 0);"
                   "border-style: outset;"
                   "border-width: 0px;"
@@ -77,7 +80,7 @@ void MyTitleBar::setButtonStyle()
                   "font: bold 14px;"
                   "padding: 6px;"
                   "text-align: center;}"
-                  "QPushButton:hover{background-color: rgb(128, 226, 255)}");
+                  "QPushButton:hover{background-color: rgb(105, 112, 112)}");
 
     setIcon(lpMinimizeButton, "image/title/min.png");
     setIcon(lpMaximizeButton, "image/title/max.png");

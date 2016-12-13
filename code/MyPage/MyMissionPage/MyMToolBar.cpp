@@ -1,3 +1,4 @@
+# pragma execution_character_set("utf-8")
 #include "MyMToolBar.h"
 
 MyMToolBar::MyMToolBar(QWidget *parent) : QWidget(parent)
@@ -12,19 +13,21 @@ MyMToolBar::MyMToolBar(QWidget *parent) : QWidget(parent)
 
 void MyMToolBar::createWidget()
 {
-    lpTransmitSpeed = new QLabel("speed: 0B/s");
+    lpTransmitSpeed = new QLabel("速度: 0B/s");
     lpTransmitSpeed->setMinimumWidth(200);
     lpTransmitSpeed->setAlignment(Qt::AlignCenter);
 
-    lpResumeOrSuspendAll = new QPushButton("suspend all", this);
-    lpCancelAll = new QPushButton("cancel all", this);
+    lpResumeOrSuspendAll = new QPushButton("全部暂停", this);
+	lpResumeOrSuspendAll->setMinimumSize(100, 40);
+    lpCancelAll = new QPushButton("全部取消", this);
+	lpCancelAll->setMinimumSize(100, 40);
 }
 
 void MyMToolBar::createLayout()
 {
     lpLayout = new QHBoxLayout(this);
 
-    lpLayout->setMargin(0);
+    lpLayout->setMargin(5);
     lpLayout->setSpacing(0);
 
     lpLayout->addWidget(lpTransmitSpeed);
@@ -38,24 +41,24 @@ void MyMToolBar::setToolBarStyle()
 {
     setAutoFillBackground(true);
     lpPal = new QPalette();
-    lpPal->setColor(QPalette::Background, QColor(236, 242, 247));
+    lpPal->setColor(QPalette::Background, QColor(64, 64, 64));
     setPalette(*lpPal);
     setMinimumSize(850, 40);
 }
 
 void MyMToolBar::setButtonStyle()
 {
-    setStyleSheet( "QPushButton{background-color: rgb(236, 242, 247);"
-                   "color: rgb(100, 100, 100);"
+    setStyleSheet( "QPushButton{background-color: rgb(64, 64, 64);"
+                   "color: rgb(217, 217, 217);"
                    "border-style: outset;"
                    "border-width: 0px;"
                    "border-color: beige;"
                    "font: bold 14px;"
                    "padding: 6px;"
                    "text-align: center;}"
-                   "QPushButton:hover{background-color: rgb(223, 238, 242)}"
-                   "QLabel{background-color: rgb(236, 242, 247);"
-                   "color:rgb(100, 100, 100);}");
+                   "QPushButton:hover{background-color: rgb(80, 80, 80)}"
+                   "QLabel{background-color: rgb(64, 64, 64);"
+                   "color:rgb(217, 217, 217);}");
 }
 
 void MyMToolBar::ConnectSlot()
@@ -66,7 +69,7 @@ void MyMToolBar::ConnectSlot()
 
 void MyMToolBar::SetSpeed(float speed)
 {
-    QString hint = "speed: ";
+    QString hint = "速度: ";
     if(speed > 1048576){
         speed /= 1048576;
         hint += QString("%1MB/s").arg(speed);

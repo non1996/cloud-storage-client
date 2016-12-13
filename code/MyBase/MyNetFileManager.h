@@ -98,6 +98,8 @@ public:
 
 	std::string GetPreDir();
 
+	std::string GetFilePath(std::string &name);
+
 	void SaveCurrentPath();
 
 	bool GetInfo(std::string &name, std::string &info);

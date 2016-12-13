@@ -57,7 +57,8 @@ void test(){
 			cout << "you are not log in\n";
 			if (param[0] == "log") {
 				if (param.size() == 3) {
-					controller->PushLogInCommand(std::string("forec@bupt.edu.cn"), std::string("TESTTHISPASSWORD"));
+					//controller->PushLogInCommand(std::string("forec@bupt.edu.cn"), std::string("TESTTHISPASSWORD"));
+					controller->PushLogInCommand(param[1], param[2]);
 				}
 			}
 			continue;

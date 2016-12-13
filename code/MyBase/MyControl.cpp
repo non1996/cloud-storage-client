@@ -260,6 +260,11 @@ bool MyControl::LogIn(std::string & un, std::string & pw)
 //	mainWindow->showInfo(QString::fromStdString(content));
 //}
 
+std::string MyControl::GetPath(std::string & name)
+{
+	return netFileManager->GetFilePath(name);
+}
+
 bool MyControl::AddNormFile(std::string & uId, std::string & path, std::string & name, std::string & date, unsigned long long size, bool shared)
 {
 	netFileManager->AddNormFile(uId, path, name, date, size, shared);

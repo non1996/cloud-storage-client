@@ -1,3 +1,4 @@
+# pragma execution_character_set("utf-8")
 #include "MyFileBrowserPage.h"
 #include "MyFBToolBar.h"
 #include "MyDirInfoBar.h"
@@ -64,9 +65,9 @@ void MyFileBrowserPage::InitLayout()
 void MyFileBrowserPage::SetThisStyle()
 {
     setAutoFillBackground(true);
-    lpPal = new QPalette();
-    lpPal->setColor(QPalette::Background, QColor(255, 255, 255));
-    setPalette(*lpPal);
+	QPalette bgpal = palette();
+	bgpal.setColor(QPalette::Background, QColor(51, 51, 51));
+	setPalette(bgpal);
 }
 
 void MyFileBrowserPage::ConnectSlot()
@@ -91,8 +92,6 @@ void MyFileBrowserPage::ConnectSlot()
     connect(lpBrowser, SIGNAL(Paste()), this, SLOT(clickedPaste()));
     connect(lpBrowser, SIGNAL(NewDir()), this, SLOT(clickedAdd()));
 
-//        connect(lpDialog, SIGNAL(GetDirName(QString)), lpBrowser, SLOT(AddDirector(QString)));
-//        connect(lpToolBar, SIGNAL(Delete()), lpBrowser, SLOT(DeleteFile()));
 }
 
 void MyFileBrowserPage::showDialog()
@@ -196,7 +195,7 @@ void MyFileBrowserPage::clickedOpen()
 void MyFileBrowserPage::clickedRename()
 {
     MyNewDirDialog* renamedialog = new MyNewDirDialog(this);
-    renamedialog->SetHint("input new name");
+    renamedialog->SetHint("ÊäÈëÐÂÃû×Ö");
     renamedialog->SetEditText(lpBrowser->GetSeletedFileName());
     if(renamedialog->exec() == QDialog::Accepted){
 		QString temp = renamedialog->GetContent();

@@ -12,6 +12,7 @@ class MyTitleBar;
 class MyMenuBar;
 class MyPage;
 class MyPasteErrorHint;
+class MyFilePropertyHint;
 
 class MyMainWindow : public QFrame
 {
@@ -55,8 +56,6 @@ private:
 
     void InitSlot();
 
-    void setWidgetStyle();
-
     void setThisStyle();
 
 
@@ -68,7 +67,7 @@ private:
     MyPage* lpPage;
 
     MyPasteErrorHint* lpError;
-
+	MyFilePropertyHint* lpFileProperty;
     QPoint last;
 
     bool isMoving;
@@ -92,6 +91,8 @@ private slots:
     void copy(QString);					//
     void cut(QString);					//
     void paste();						//
+
+	void showFileInfo(QString &name, QString &path, QString &date, QString &size, QString &type);
 
 	//protocol did not support yet
     void suspendD(int);

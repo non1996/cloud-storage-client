@@ -45,7 +45,6 @@ bool MyMission::_RecvToWriter()
 
 	for (;;) {
 		if (recvLength == totalLength) {
-			CompleteChange();
 			return true;
 		}
 		if (false == GetSocket()->ReceiveUntil(16)) {
@@ -54,10 +53,8 @@ bool MyMission::_RecvToWriter()
 		std::string strLenInfo;
 		GetSocket()->Read(strLenInfo, 16);
 		plength = MyEnCoder::BytesToUll(strLenInfo.substr(0, 8));
-		std::cout << "文件块明文长度:" << plength;
 		elength = MyEnCoder::BytesToUll(strLenInfo.substr(8, 8));
 		elength -= 16;
-		std::cout << "文件块密文长度(已减16):" << elength;
 		
 		std::string code;
 		if (false == GetSocket()->ReceiveUntil(elength)) {
@@ -69,7 +66,6 @@ bool MyMission::_RecvToWriter()
 			std::cout << "write file error: offset is: " << recvLength << std::endl;
 		}
 		recvLength += plength;
-		std::cout << "文件总大小:" << totalLength << ",已下载大小:" << recvLength << std::endl;
 
 		Count(plength);
 		if (IsOneSecond()) {

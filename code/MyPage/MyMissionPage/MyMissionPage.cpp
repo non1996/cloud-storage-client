@@ -1,3 +1,4 @@
+# pragma execution_character_set("utf-8")
 #include "MyMissionPage.h"
 #include "MyMissionInfoBar.h"
 #include "MyMToolBar.h"
@@ -54,8 +55,16 @@ void MyMissionPage::SetThisStyle()
     setMinimumSize(950, 450);
     setAutoFillBackground(true);
     lpPal = new QPalette();
-    lpPal->setColor(QPalette::Background, QColor(255, 255, 255));
-    setPalette(*lpPal);
+    lpPal->setColor(QPalette::Background, QColor(51, 51, 51));
+	setPalette(*lpPal);
+	lpMissionList->setStyleSheet("QListWidget{background-color:rgb(51, 51, 51);"
+		"color:rgb(217, 217, 217);"
+		"border-style: inset;"
+		"border-width: 2px;"
+		"border-color: rgb(45, 45, 45)}"
+		"QListWidget::item:hover{show-decoration-selected:0;background:rgb(80, 80, 80);}"
+		"QListWidget::item:selected{background:rgb(80, 80, 80);padding:0px;margin:0px;}");
+    
 }
 
 void MyMissionPage::AddMission(QString name)

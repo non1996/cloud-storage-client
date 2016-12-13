@@ -28,10 +28,11 @@ private:
     QHBoxLayout* lpSubLayout1;
     QHBoxLayout* lpSubLayout2;
     QHBoxLayout* lpSubLayout3;
+
+	void SetStyle();
 private slots:
     void ok();
     void cancel();
-
 };
 
 #endif // MYLOGINDIALOG_H

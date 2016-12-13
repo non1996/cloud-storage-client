@@ -1,6 +1,7 @@
 #include "MySocket.h"
 #include "MyEnCoder.h"
 #include <iostream>
+#include <fstream>
 
 bool MySocket::ReceiveUntil(unsigned int until)
 {
@@ -16,12 +17,10 @@ bool MySocket::ReceiveUntil(unsigned int until)
 		else{
 			len = recv(client, extraBuf + currentContentSize, exSize - currentContentSize, 0);
 		}
-		if (len <= 0) {
-			std::cout << "网络断开\n";
+		if (len < 0) {
 			return false;
 		}
 		currentContentSize += (unsigned int)len;
-//		std::cout << "当前缓冲区字符数:" << currentContentSize << std::endl;
 	}
 	return true;
 }

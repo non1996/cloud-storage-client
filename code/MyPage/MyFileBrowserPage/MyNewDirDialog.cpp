@@ -1,3 +1,4 @@
+# pragma execution_character_set("utf-8")
 #include "MyNewDirDialog.h"
 
 #include <QBitmap>
@@ -51,12 +52,12 @@ void MyNewDirDialog::mouseReleaseEvent(QMouseEvent *e)
 }
 
 void MyNewDirDialog::InitWidget(){
-    lpOK = new QPushButton("ok", this);
+    lpOK = new QPushButton("确定", this);
     lpOK->setMinimumSize(30, 20);
-    lpCancel = new QPushButton("cancel", this);
+    lpCancel = new QPushButton("取消", this);
     lpCancel->setMinimumSize(30, 20);
     lpNameInput = new QLineEdit(this);
-    lpHint = new QLabel("input director name", this);
+    lpHint = new QLabel("输入文件夹名", this);
     lpFalse = new QLabel(this);
 }
 
@@ -80,13 +81,20 @@ void MyNewDirDialog::InitLayout()
 
 void MyNewDirDialog::SetThisStyle()
 {
-    setStyleSheet("QDialog{background-color:rgb(240, 240, 240);}"
-                  "QPushButton{background-color:rgb(20, 166, 252);"
-                  "color: rgb(100, 100, 100);"
+	setStyleSheet("QDialog{background-color:rgb(64, 64, 64);"
+				  "border-style: inset;"
+				  "border-width: 2px;"
+				  "border-color: rgb(60, 60, 60)}"
+                  "QPushButton{background-color:rgb(64, 64, 64);"
                   "border-style: outset;"
                   "border-width: 0px;}"
-                  "QPushButton:hover{background-color: rgb(232, 255, 252)}"
-                  "QWidget{color:rgb(100, 100, 100)}");
+                  "QPushButton:hover{background-color: rgb(80, 80, 80)}"
+                  "QWidget{color:rgb(217, 217, 217); font: bold 14px;}"
+					"QLineEdit{background-color: rgb(51, 51, 51);"
+					"border-style: inset;"
+					"border-width: 1px;"
+					"border-color: rgb(45, 45, 45);"
+					"padding: 6px;}");
     setGeometry(100, 100, 300, 100);
     setWindowFlags(Qt::FramelessWindowHint);
     hide();
@@ -108,8 +116,6 @@ void MyNewDirDialog::pressOk()
         lpFalse->setText("'+' is not valid");
         return;
     }
-//    emit GetDirName(lpNameInput->text());
     accept();
-//    close();
 }
 

@@ -53,6 +53,7 @@ bool MyTransmitThreadBase::Connect()
 		if (IsFinish() == true) {
 			return false;
 		}
+		std::cout << "³¢ÊÔÁ¬½Ó.." << std::endl;
 	}
 	SetConnect(true);
 	return true;

@@ -1,3 +1,4 @@
+# pragma execution_character_set("utf-8")
 #include "MyMissionInfoBar.h"
 
 MyMissionInfoBar::MyMissionInfoBar(QWidget *parent) : QWidget(parent)
@@ -37,7 +38,7 @@ void MyMissionInfoBar::SetSpeed(unsigned int i)
 
 void MyMissionInfoBar::SetFinish()
 {
-	lpSpeed->setText("complete");
+	lpSpeed->setText("完成");
 	lpProgress->setValue(100);
 }
 
@@ -45,9 +46,9 @@ void MyMissionInfoBar::SetRunning(bool r)
 {
     isRunning = r;
     if(isRunning){
-        lpResumeOrSuspend->setText("suspend");
+        lpResumeOrSuspend->setText("暂停");
     }else{
-        lpResumeOrSuspend->setText("resume");
+        lpResumeOrSuspend->setText("继续");
     }
 }
 
@@ -69,9 +70,9 @@ void MyMissionInfoBar::InitWidgetDefault()
     lpFileName = new QLabel("default", this);
 	lpSpeed = new QLabel(this);
     lpProgress = new QProgressBar(this);
-    lpResumeOrSuspend = new QPushButton("suspend", this);
-    lpCancel = new QPushButton("cancel", this);
-    lpDir = new QPushButton("open director", this);
+    lpResumeOrSuspend = new QPushButton("暂停", this);
+    lpCancel = new QPushButton("取消", this);
+    lpDir = new QPushButton("打开文件夹", this);
 }
 
 void MyMissionInfoBar::InitInfo()
@@ -96,6 +97,7 @@ void MyMissionInfoBar::InitLayout()
     lpMainLayout->addWidget(lpResumeOrSuspend);
     lpMainLayout->addWidget(lpCancel);
     lpMainLayout->addWidget(lpDir);
+	lpMainLayout->addSpacing(5);
     setLayout(lpMainLayout);
 }
 
@@ -115,24 +117,26 @@ void MyMissionInfoBar::SetWidgetStyle()
     lpDir->setFixedSize(100, 35);
     lpProgress->setRange(0, 100);
     lpProgress->setValue(0);
-    lpFileName->setStyleSheet("QLabel{color:rgb(100, 100, 100);}");
-    lpProgress->setStyleSheet("QProgressBar{border:1px solid #DDDDDD;"
+	lpSpeed->setStyleSheet("QLabel{color:rgb(217, 217, 217);font: bold 14px;}");
+    lpFileName->setStyleSheet("QLabel{color:rgb(217, 217, 217);font: bold 14px;}");
+    lpProgress->setStyleSheet("QProgressBar{border:1px solid #050505;"
                               "height:30;"
-                              "background: rgb(240, 240, 240);"
+                              "border-color: rgb(55, 55, 55);"
                               "text-align:center;"
-                              "color:rgb(100, 100, 100);"
+                              "color:rgb(217, 217, 217);"
+							  "font: bold 14px;"
                               "border-radius:10px;}"
                               "QProgressBar::chunk{"
                               "border-top-left-radius: 10px;"
                               "border-bottom-left-radius: 10px;"
                               "border-top-right-radius: 10px;"
                               "border-bottom-right-radius: 10px;"
-                              "background-color:skyblue;}"
-                              );
-    setStyleSheet("QPushButton{background-color: white;"
-                  "border: 1px solid #DDDDDD;"
-                  "color: rgb(100, 100, 100);}"
-                  "QPushButton:hover{background-color:rgb(230, 230, 230);}");
+							  "background-color:rgb(80, 80, 80);}");
+	setStyleSheet("QPushButton{background-color: rgb(64, 64, 64);"
+				  "border-style: inset;"
+                  "border: 1px solid #050505;"
+                  "color: rgb(217, 217, 217);}"
+                  "QPushButton:hover{background-color:rgb(80, 80, 80);}");
 }
 
 void MyMissionInfoBar::pressedSuspendOrResume()

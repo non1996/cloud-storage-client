@@ -176,6 +176,7 @@ public:
 
 //	void showInfo(std::string);	//test
 
+	std::string GetPath(std::string &name);
 	bool AddNormFile(std::string &uId, std::string &path, std::string &name, std::string &date, unsigned long long size, bool shared);
 	bool AddDirector(std::string &uId, std::string &path, std::string & name, std::string & date, unsigned long long size, bool shared);
 	void DeleteNetFile(std::string &name);

@@ -1,3 +1,4 @@
+# pragma execution_character_set("utf-8")
 #include "MyFileBrowser.h"
 #include <QFile>
 #include <QDebug>
@@ -71,7 +72,7 @@ void MyFileBrowser::DeleteNetFile(QString &name)
 void MyFileBrowser::InitWidget()
 {
     lpListWidget = new MyFileListWidget(this);
-    lpListWidget->setIconSize(QSize(100, 100));
+    lpListWidget->setIconSize(QSize(80, 80));
     lpListWidget->setResizeMode(QListView::Adjust);
     lpListWidget->setViewMode(QListView::IconMode);
     lpListWidget->setMovement(QListView::Static);
@@ -87,6 +88,13 @@ void MyFileBrowser::InitCounter()
 void MyFileBrowser::SetThisStyle()
 {
     setMinimumSize(950, 410);
+	lpListWidget->setStyleSheet("QListWidget{background-color:rgb(51, 51, 51);"
+		"color:rgb(217, 217, 217);"
+		"border-style: inset;"
+		"border-width: 2px;"
+		"border-color: rgb(45, 45, 45)}"
+		"QListWidget::item:hover{show-decoration-selected:0;background:rgb(80, 80, 80);}"
+		"QListWidget::item:selected{background:rgb(80, 80, 80);padding:0px;margin:0px;}");
 }
 
 void MyFileBrowser::ConnectSlot()
@@ -115,8 +123,57 @@ void MyFileBrowser::AddDirector(QString &name)
 void MyFileBrowser::AddFile(QString &name)
 {
 	QPixmap iconP;
-	qDebug() << iconP.load("image/fileBrowser/director.png");
-	QListWidgetItem* pItem = new QListWidgetItem(QIcon(iconP.scaled(QSize(80, 80))), name);
+	QStringList sections = name.split('.');
+	if (sections.size() == 1) {
+		iconP.load("image/fileBrowser/director.png");
+	}
+	else if (sections.back() == "txt") {
+		iconP.load("image/fileBrowser/txt.png");
+	}
+	else if (sections.back() == "doc" || sections.back() == "docx") {
+		iconP.load("image/fileBrowser/doc.png");
+	}
+	else if (sections.back() == "xls" || sections.back() == "xlsx") {
+		iconP.load("image/fileBrowser/excel.png");
+	}
+	else if (sections.back() == "html") {
+		iconP.load("image/fileBrowser/html.png");
+	}
+	else if (sections.back() == "rar" || 
+			 sections.back() == "7z" || 
+			 sections.back() == "zip") {
+		iconP.load("image/fileBrowser/compress.png");
+	}
+	else if (sections.back() == "bmp" ||
+		sections.back() == "gif" ||
+		sections.back() == "jpg" ||
+		sections.back() == "jpeg" ||
+		sections.back() == "png" || 
+		sections.back() == "svg" || 
+		sections.back() == "tga") {
+		iconP.load("image/fileBrowser/photo.png");
+	}
+	else if (sections.back() == "mp3" ||
+		sections.back() == "wav" ||
+		sections.back() == "ape" ||
+		sections.back() == "acc" ||
+		sections.back() == "ogg" ||
+		sections.back() == "wma") {
+		iconP.load("image/fileBrowser/music.png");
+	}
+	else if (sections.back() == "rm" ||
+		sections.back() == "rmvb" ||
+		sections.back() == "wmv" ||
+		sections.back() == "avi" ||
+		sections.back() == "mp4" ||
+		sections.back() == "3gp" ||
+		sections.back() == "mkv") {
+		iconP.load("image/fileBrowser/video.png");
+	}
+	else {
+		iconP.load("image/fileBrowser/file.png");
+	}
+	QListWidgetItem* pItem = new QListWidgetItem(QIcon(iconP.scaled(QSize(60, 60))), name);
 	pItem->setSizeHint(QSize(100, 100));
 	lpListWidget->addItem(pItem);
 }

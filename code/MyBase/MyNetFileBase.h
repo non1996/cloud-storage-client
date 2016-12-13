@@ -63,13 +63,13 @@ public:
 		return date;
 	}
 
-	virtual std::string GetType() {
-		return "";
-	}
+	virtual std::string GetType() = 0;
 
 	unsigned long long GetSize() {
 		return size;
 	}
+
+	virtual MyNetFileBase* Copy() = 0;
 };
 
 class MyNetFileNorm 
@@ -91,7 +91,10 @@ public:
 		return "file";
 	}
 
-	virtual std::string toString();
+	virtual MyNetFileBase* Copy() {
+		return new MyNetFileNorm(*this);
+	}
+//	virtual std::string toString();
 };
 
 class MyNetFileDir
@@ -113,7 +116,10 @@ public:
 		return "dir";
 	}
 
-	virtual std::string toString();
+	virtual MyNetFileBase* Copy() {
+		return new MyNetFileDir(*this);
+	}
+//	virtual std::string toString();
 };
 #endif // !MYNETFILEBASE_H_
 

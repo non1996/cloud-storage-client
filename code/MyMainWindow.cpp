@@ -1,10 +1,14 @@
+# pragma execution_character_set("utf-8")
+
 #include "MyMainWindow.h"
 #include "MyTitleBar.h"
+#include "MyFilePropertyHint.h"
 #include "MyMenuBar/MyMenuBar.h"
 #include "MyPage/MyPage.h"
 #include "MyPasteErrorHint.h"
 #include "MyBase/MyController.h"
 #include "MyBase/MyController.h"
+
 
 #include <QTimer>
 #include <QPainter>
@@ -127,6 +131,8 @@ void MyMainWindow::InitWidget()
     lpMenuBar = new MyMenuBar(this);
     lpPage = new MyPage(this);
     lpError = new MyPasteErrorHint(this);
+	lpFileProperty = new MyFilePropertyHint(this);
+	lpFileProperty->hide();
 }
 
 void MyMainWindow::InitLayout()
@@ -180,14 +186,10 @@ void MyMainWindow::InitSlot()
 	connect(this, SIGNAL(DownloadComplete_signal(int)), lpPage, SLOT(DownloadComplete(int)));
 }
 
-void MyMainWindow::setWidgetStyle()
-{
-}
-
 void MyMainWindow::setThisStyle()
 {
     QPalette bgpal = palette();
-    bgpal.setColor(QPalette::Background, QColor(14, 142, 231));
+    bgpal.setColor(QPalette::Background, QColor(57, 63, 63));
     setPalette(bgpal);
 
     setMinimumWidth(950);
@@ -209,7 +211,12 @@ void MyMainWindow::startDownloadMission(QString name)
 	if (!c->GetControl()->GetManager()->GetFileUID(name.toStdString(), uID)) {
 		return;
 	}
-	c->PushGetCommand(uID);
+	if (!c->GetControl()->IsConnect()) {
+		showInfo("网络断开");
+	}
+	else{
+		c->PushGetCommand(uID);
+	}
 }
 
 void MyMainWindow::startUploadMission(QString name)
@@ -218,8 +225,14 @@ void MyMainWindow::startUploadMission(QString name)
 	QString fileName = name.mid(pos + 1, name.length() - pos);
 	QString filePath = name.mid(0, pos + 1);
 	showInfo(filePath);
+
 	MyController* c = MyController::Instance();
-	c->PushPutCommand(fileName.toStdString(), filePath.toStdString(), c->GetControl()->GetManager()->GetCurrentDir());
+	if (!c->GetControl()->IsConnect()) {
+		showInfo("网络断开");
+	}
+	else {
+		c->PushPutCommand(fileName.toStdString(), filePath.toStdString(), c->GetControl()->GetManager()->GetCurrentDir());
+	}
 }
 
 void MyMainWindow::shareFile(QString name)
@@ -229,7 +242,13 @@ void MyMainWindow::shareFile(QString name)
 	if (false == c->GetControl()->GetManager()->GetFileUID(name.toStdString(), uID)) {
 		return;
 	}
-	c->PushShareCommand(uID, std::string("0"));
+
+	if (!c->GetControl()->IsConnect()) {
+		showInfo("网络断开");
+	}
+	else {
+		c->PushShareCommand(uID, std::string("0"));
+	}
 }
 
 void MyMainWindow::deleteFile(QString name)
@@ -239,13 +258,25 @@ void MyMainWindow::deleteFile(QString name)
 	if (false == c->GetControl()->GetManager()->GetFileUID(name.toStdString(), uID)) {
 		return;
 	}
-	c->PushDeleteCommand(uID, name.toStdString());
+
+	if (!c->GetControl()->IsConnect()) {
+		showInfo("网络断开");
+	}
+	else {
+		c->PushDeleteCommand(uID, name.toStdString());
+	}
 }
 
 void MyMainWindow::makeNewDir(QString name)
 {
 	MyController* c = MyController::Instance();
-	c->PushMkdirCommand(name.toStdString(), c->GetControl()->GetManager()->GetCurrentDir());
+
+	if (!c->GetControl()->IsConnect()) {
+		showInfo("网络断开");
+	}
+	else {
+		c->PushMkdirCommand(name.toStdString(), c->GetControl()->GetManager()->GetCurrentDir());
+	}
 }
 
 void MyMainWindow::toUpperDir()
@@ -254,33 +285,46 @@ void MyMainWindow::toUpperDir()
 	if (c->GetControl()->GetManager()->IsRootDir()) {
 		return;
 	}
-	c->GetControl()->GetManager()->SaveCurrentPath();
-	c->PushLsCommand(	std::string("0"),
-						std::string(""),
-						c->GetControl()->GetManager()->GetUpperDir(),
-						std::vector<std::string>());
+	if (!c->GetControl()->IsConnect()) {
+		showInfo("网络断开");
+	}
+	else {
+		c->GetControl()->GetManager()->SaveCurrentPath();
+		c->PushLsCommand(std::string("0"),
+			std::string(""),
+			c->GetControl()->GetManager()->GetUpperDir(),
+			std::vector<std::string>());
+	}
 }
 
 void MyMainWindow::toBeforeDir()
 {
 	MyController* c = MyController::Instance();
-	if (c->GetControl()->GetManager()->hasPreDir()) {
-//		c->GetControl()->GetManager()->SaveCurrentPath();
-//		showInfo(QString::fromStdString(c->GetControl()->GetManager()->GetPreDir()));
-		c->PushLsCommand(	std::string("0"),
-							std::string(""),
-							c->GetControl()->GetManager()->GetPreDir(),
-							std::vector<std::string>());
+	if (!c->GetControl()->IsConnect()) {
+		showInfo("网络断开");
+	}
+	else {
+		if (c->GetControl()->GetManager()->hasPreDir()) {
+			c->PushLsCommand(std::string("0"),
+								std::string(""),
+								c->GetControl()->GetManager()->GetPreDir(),
+								std::vector<std::string>());
+		}
 	}
 }
 
 void MyMainWindow::refreshDir()
 {
 	MyController* c = MyController::Instance();
-	c->PushLsCommand(	std::string("0"), 
-						std::string(""), 
-						c->GetControl()->GetManager()->GetCurrentDir(),
-						std::vector<std::string>());
+	if (!c->GetControl()->IsConnect()) {
+		showInfo("网络断开");
+	}
+	else {
+		c->PushLsCommand(	std::string("0"),
+							std::string(""),
+							c->GetControl()->GetManager()->GetCurrentDir(),
+							std::vector<std::string>());
+	}
 }
 
 void MyMainWindow::searchFile(QString name)
@@ -288,22 +332,40 @@ void MyMainWindow::searchFile(QString name)
 	MyController* c = MyController::Instance();
 	std::vector<std::string> argv;
 	argv.push_back(name.toStdString());
-	c->GetControl()->GetManager()->SaveCurrentPath();
-	c->PushLsCommand(	std::string("1"),
-						std::string(""),
-						c->GetControl()->GetManager()->GetCurrentDir(),
-						argv);
+	
+	if (!c->GetControl()->IsConnect()) {
+		showInfo("网络断开");
+	}
+	else {
+		c->GetControl()->GetManager()->SaveCurrentPath();
+		c->PushLsCommand(	std::string("1"),
+							std::string(""),
+							c->GetControl()->GetManager()->GetCurrentDir(),
+							argv);
+	}
 }
 
 void MyMainWindow::enterDir(QString name)
 {
 	MyController* c = MyController::Instance();
 	c->GetControl()->GetManager()->SaveCurrentPath();
-//	showInfo(QString::fromStdString(c->GetControl()->GetManager()->GetCurrentDir()));
-	c->PushLsCommand(	std::string("0"),
-						std::string(""),
-						(c->GetControl()->GetManager()->GetCurrentDir() + name.toStdString() + "/"),
-						std::vector<std::string>());
+
+	if (!c->GetControl()->IsConnect()) {
+		showInfo("网络断开");
+	}
+	else {
+		if (name.split('.').size() == 1) {
+			std::string path = c->GetControl()->GetPath(name.toStdString());
+			if (path.size() == 0) {
+				return;
+			}
+			c->PushLsCommand(std::string("0"),
+				std::string(""),
+//				(c->GetControl()->GetManager()->GetCurrentDir() + name.toStdString() + "/"),
+				path + name.toStdString() + "/",
+				std::vector<std::string>());
+		}
+	}
 }
 
 void MyMainWindow::renameFile(QString oldn, QString newn)
@@ -313,10 +375,15 @@ void MyMainWindow::renameFile(QString oldn, QString newn)
 	if (false == c->GetControl()->GetManager()->GetFileUID(oldn.toStdString(), uID)) {
 		return;
 	}
-	c->PushRenameCommand(	uID, 
-							oldn.toStdString(), 
-							newn.toStdString(), 
-							c->GetControl()->GetManager()->GetCurrentDir());
+	if (!c->GetControl()->IsConnect()) {
+		showInfo("网络断开");
+	}
+	else {
+		c->PushRenameCommand(uID,
+			oldn.toStdString(),
+			newn.toStdString(),
+			c->GetControl()->GetManager()->GetCurrentDir());
+	}
 }
 
 void MyMainWindow::getProperty(QString name)
@@ -324,12 +391,16 @@ void MyMainWindow::getProperty(QString name)
 	MyController* c = MyController::Instance();
 	std::string info;
 	QString infoQ;
-
+	QStringList param;
 	if (false == c->GetControl()->GetManager()->GetInfo(name.toStdString(), info)) {
 		return;
 	}
 	else {
-		showInfo(QString::fromStdString(info));
+		param = QString::fromStdString(info).split('+');
+		if (param.size() != 5) {
+			return;
+		}
+		showFileInfo(param[0], param[1], param[2], param[3], param[4]);
 	}
 }
 
@@ -361,6 +432,11 @@ void MyMainWindow::paste()
 		QTimer::singleShot(2000, lpError, SLOT(hide()));
 		return;
 	}
+
+	if (!c->GetControl()->IsConnect()) {
+		showInfo("网络断开");
+		return;
+	}
 	if (c->GetControl()->GetManager()->IsCopy()) {
 		c->PushCopyCommand(c->GetControl()->GetManager()->GetCopyFileUID(), c->GetControl()->GetManager()->GetCurrentDir());
 	}
@@ -369,6 +445,13 @@ void MyMainWindow::paste()
 							c->GetControl()->GetManager()->GetCopyFileName(),
 							c->GetControl()->GetManager()->GetCurrentDir());
 	}
+}
+
+void MyMainWindow::showFileInfo(QString & name, QString & path, QString & date, QString & size, QString & type)
+{
+	lpFileProperty->setGeometry(300, 200, 200, 300);
+	lpFileProperty->SetText(name, path, date, size, type);
+	lpFileProperty->show();
 }
 
 void MyMainWindow::suspendD(int n)
@@ -412,11 +495,9 @@ void MyMainWindow::openDirU(int n)
 {
 	MyController* c = MyController::Instance();
 	showInfo(QString("%1").arg(n));
-	std::string stdPath = c->GetControl()->GetUploadPath(n);    
-	QString path = QString::fromStdString(stdPath);
-//	path.replace("/", "\\");
-	showInfo(path);
-	//    QProcess::startDetached("explorer "+path);
+//	std::string stdPath = c->GetControl()->GetUploadPath(n);    
+//	QString path = QString::fromStdString(stdPath);
+//	showInfo(path);
 }
 
 void MyMainWindow::CleanAndClose()

@@ -1,3 +1,4 @@
+# pragma execution_character_set("utf-8")
 #include "MyFileListWidget.h"
 
 
@@ -10,12 +11,12 @@ MyFileListWidget::MyFileListWidget(QWidget* parent)
 
 void MyFileListWidget::InitAction()
 {
-    lpOpen = new QAction("open", this);
-    lpDelete = new QAction("delete", this);
-    lpCopy = new QAction("copy", this);
-    lpCut = new QAction("cut", this);
-    lpRename = new QAction("rename", this);
-    lpProperty = new QAction("property", this);
+    lpOpen = new QAction("打开", this);
+    lpDelete = new QAction("删除", this);
+    lpCopy = new QAction("复制", this);
+    lpCut = new QAction("剪切", this);
+    lpRename = new QAction("重命名", this);
+    lpProperty = new QAction("属性", this);
 
     lpPaste = new QAction("paste", this);
     lpNewDir = new QAction("new director", this);

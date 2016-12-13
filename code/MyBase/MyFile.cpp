@@ -17,7 +17,7 @@ void MyFile::SetName(const char *name)
 {
 	int len = strlen(name);
 	Cleaner::Delete<char*>(&(this->name));
-	this->name = new char[len];
+	this->name = new char[len + 1];
 	strcpy(this->name, name);
 }
 
@@ -152,10 +152,10 @@ bool MyFile::Size(const char * name, unsigned long long & s)
 bool MyFile::CreateEmptyFile(const char * name, unsigned long long size)
 {
 	std::ofstream fout;
-	if (Exist(name)) {
-		std::cout << "文件已存在" << std::endl;
-		return false;
-	}
+//	if (Exist(name)) {
+//		std::cout << "文件已存在" << std::endl;
+//		return false;
+//	}
 	fout.open(name, std::ios_base::ate);
 	if (!fout.is_open()) {
 		return false;

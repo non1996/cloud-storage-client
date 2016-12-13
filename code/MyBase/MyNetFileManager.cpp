@@ -70,7 +70,8 @@ bool MyNetFileManager::Copy(std::string & fileName)
 	if (HasCopyFile()) {
 		Cleaner::Delete<MyNetFileBase*>(&copyBuf);
 	}
-	copyBuf = new MyNetFileBase(*(hresult->second));
+//	copyBuf = new MyNetFileBase(*(hresult->second));
+	copyBuf = hresult->second->Copy();
 	isCopy = true;
 	return true;
 }
@@ -84,7 +85,8 @@ bool MyNetFileManager::Cut(std::string & fileName)
 	if (HasCopyFile()) {
 		Cleaner::Delete<MyNetFileBase*>(&copyBuf);
 	}
-	copyBuf = new MyNetFileBase(*(hresult->second));
+//	copyBuf = new MyNetFileBase(*(hresult->second));
+	copyBuf = hresult->second->Copy();
 	isCopy = false;
 	return true;
 }
@@ -94,7 +96,8 @@ bool MyNetFileManager::Paste()
 	if (!HasCopyFile()) {
 		return false;
 	}
-	MyNetFileBase* temp = new MyNetFileBase(*(copyBuf));
+//	MyNetFileBase* temp = new MyNetFileBase(*(copyBuf));
+	MyNetFileBase* temp = copyBuf->Copy();
 	temp->SetPath(GetCurrentDir());
 	std::pair<std::map<std::string, MyNetFileBase*>::iterator, bool> ret;
 	ret = files.insert(std::make_pair(temp->GetName(), temp));
@@ -247,6 +250,15 @@ std::string MyNetFileManager::GetPreDir()
 		ss << prePath.at(i) << "/";
 	}
 	return ss.str();
+}
+
+std::string MyNetFileManager::GetFilePath(std::string & name)
+{
+	std::map<std::string, MyNetFileBase*>::iterator hresult = files.find(name);
+	if (hresult == files.end()) {
+		return "";
+	}
+	return hresult->second->GetPath();
 }
 
 void MyNetFileManager::SaveCurrentPath()

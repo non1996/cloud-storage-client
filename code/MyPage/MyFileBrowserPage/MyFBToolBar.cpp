@@ -1,3 +1,4 @@
+# pragma execution_character_set("utf-8")
 #include "MyFBToolBar.h"
 #include <QBitmap>
 #include <QPainter>
@@ -22,11 +23,11 @@ void MyFBToolBar::setSlotConnect()
 
 void MyFBToolBar::createWidget()
 {
-    lpUpload = new QPushButton("upload", this);
-    lpDownload = new QPushButton("download", this);
-    lpShare = new QPushButton("share", this);
-    lpDelete = new QPushButton("delete", this);
-    lpNewDir = new QPushButton("new director", this);
+    lpUpload = new QPushButton("上传", this);
+    lpDownload = new QPushButton("下载", this);
+    lpShare = new QPushButton("分享", this);
+    lpDelete = new QPushButton("删除", this);
+    lpNewDir = new QPushButton("新建文件夹", this);
 
     lpUpload->setFixedSize(100, 40);
     lpDownload->setFixedSize(100, 40);
@@ -55,22 +56,22 @@ void MyFBToolBar::setToolBarStyle()
 {
     setAutoFillBackground(true);
     lpPal = new QPalette();
-    lpPal->setColor(QPalette::Background, QColor(236, 242, 247));
+    lpPal->setColor(QPalette::Background, QColor(64, 64, 64));
     setPalette(*lpPal);
     setMinimumSize(850, 40);
 }
 
 void MyFBToolBar::setButtonStyle()
 {
-    setStyleSheet( "QPushButton{background-color: rgb(236, 242, 247);"
-                   "color: rgb(100, 100, 100);"
+    setStyleSheet( "QPushButton{background-color: rgb(64, 64, 64);"
+                   "color: rgb(217, 217, 217);"
                    "border-style: outset;"
                    "border-width: 0px;"
-                   "border-color: beige;"
+                   "border-color: rgb(80, 80, 80);"
                    "font: bold 14px;"
                    "padding: 6px;"
                    "text-align: center;}"
-                   "QPushButton:hover{background-color: rgb(223, 238, 242)}");
+                   "QPushButton:hover{background-color: rgb(80, 80, 80)}");
 }
 
 void MyFBToolBar::clickedUpload(){

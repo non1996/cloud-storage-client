@@ -1,3 +1,4 @@
+# pragma execution_character_set("utf-8")
 #include "MyDeleteDialog.h"
 
 MyDeleteDialog::MyDeleteDialog(QWidget *parent)
@@ -17,13 +18,16 @@ MyDeleteDialog::MyDeleteDialog(QWidget *parent)
     lpMainLayout->addLayout(lpSubLayout);
     setLayout(lpMainLayout);
 
-    setStyleSheet("QDialog{background-color:rgb(240, 240, 240);}"
-                  "QPushButton{background-color:rgb(20, 166, 252);"
-                  "color: rgb(100, 100, 100);"
-                  "border-style: outset;"
-                  "border-width: 0px;}"
-                  "QPushButton:hover{background-color: rgb(232, 255, 252)}"
-                  "QWidget{color:rgb(100, 100, 100)}");
+	setStyleSheet("QDialog{background-color:rgb(64, 64, 64);"
+						"border-style: inset;"
+						"border-width: 2px;"
+						"border-color: rgb(60, 60, 60)}"
+						"QPushButton{background-color:rgb(64, 64, 64);"
+						"color: rgb(217, 217, 217);"
+						"border-style: outset;"
+						"border-width: 0px;}"
+						"QPushButton:hover{background-color: rgb(80, 80, 80)}"
+						"QWidget{color:rgb(217, 217, 217);font: bold 14px;}");
     setWindowFlags(Qt::FramelessWindowHint);
 
     setModal(true);
@@ -34,7 +38,7 @@ MyDeleteDialog::MyDeleteDialog(QWidget *parent)
 
 void MyDeleteDialog::SetHint(QString name)
 {
-    QString hint = "Really to delete file";
-    hint += name + "?";
+    QString hint = "确定要删除文件";
+    hint += name + "吗?";
     lpHint->setText(hint);
 }

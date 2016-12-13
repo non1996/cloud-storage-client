@@ -78,7 +78,7 @@ public:
 		return password;
 	}
 
-	virtual std::string &GetLocalPath();
+	virtual std::string &GetLocalPath() = 0;
 
 	void SetTokenOne(std::string &token) {
 		token_one = token;

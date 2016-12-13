@@ -1,3 +1,4 @@
+# pragma execution_character_set("utf-8")
 #include "MyMenuBar.h"
 #include "MyToolButton.h"
 #include "MyUserLabel.h"
@@ -8,8 +9,6 @@ MyMenuBar::MyMenuBar(QWidget *parent) : QWidget(parent)
     createWidget();
     createLayout();
     setSlotConnect();
-
-//    connect(lpMainWindowButton, SIGNAL(clicked(bool)), this, SLOT(test_()));
 }
 
 void MyMenuBar::createWidget()

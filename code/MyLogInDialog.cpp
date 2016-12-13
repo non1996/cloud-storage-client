@@ -5,20 +5,20 @@
 MyLogInDialog::MyLogInDialog(QWidget* parent)
     :QDialog(parent)
 {
-    lpU = new QLabel("username", this);
+    lpU = new QLabel("用户名", this);
     lpU->setMinimumWidth(40);
-    lpP = new QLabel("password", this);
+    lpP = new QLabel("密码", this);
     lpP->setMinimumWidth(40);
 	lpHint = new QLabel(this);
-	lpHint->setMinimumHeight(20);
+	lpHint->setMinimumHeight(10);
 
     lpUsername = new QLineEdit("forec@bupt.edu.cn", this);
-    lpUsername->setPlaceholderText("input username");
+    lpUsername->setPlaceholderText("输入用户名");
     lpPassword = new QLineEdit("TESTTHISPASSWORD", this);
-    lpPassword->setPlaceholderText("input password");
+    lpPassword->setPlaceholderText("输入密码");
 
-    lpLogIn = new QPushButton("log in", this);
-    lpCancel = new QPushButton("cancel", this);
+    lpLogIn = new QPushButton("登录", this);
+    lpCancel = new QPushButton("取消", this);
 
     lpMainLayout = new QVBoxLayout(this);
     lpSubLayout1 = new QHBoxLayout(this);
@@ -27,8 +27,8 @@ MyLogInDialog::MyLogInDialog(QWidget* parent)
 
     lpMainLayout->addLayout(lpSubLayout1);
     lpMainLayout->addLayout(lpSubLayout2);
-    lpMainLayout->addLayout(lpSubLayout3);
 	lpMainLayout->addWidget(lpHint);
+	lpMainLayout->addLayout(lpSubLayout3);
 
     lpSubLayout1->addWidget(lpU);
     lpSubLayout1->addWidget(lpUsername);
@@ -40,7 +40,7 @@ MyLogInDialog::MyLogInDialog(QWidget* parent)
 
     connect(lpLogIn, SIGNAL(clicked(bool)), this, SLOT(ok()));
     connect(lpCancel, SIGNAL(clicked(bool)), this, SLOT(cancel()));
-
+	SetStyle();
 }
 
 void MyLogInDialog::ok()
@@ -57,17 +57,51 @@ void MyLogInDialog::ok()
 		c->PushLogInCommand(username, password);
 		while (!c->GetControl()->IsLogIn()) {
 			if (!c->GetControl()->IsConnect()) {
-				lpHint->setText("error username or password");
+				lpHint->setText("用户名或密码错误");
 				return;
 			}
-			lpHint->setText("is loging...");
+			lpHint->setText("登录中..");
 		}
 		c->PushLsCommand(std::string("0"), std::string(""), std::string("/"), std::vector<std::string>());
 		accept();
 	}
 	else {
-		lpHint->setText("net disconnect");
+		lpHint->setText("网络断开");
 	}
+}
+
+void MyLogInDialog::SetStyle()
+{
+	QPalette bgpal = palette();
+	bgpal.setColor(QPalette::Background, QColor(57, 63, 63));
+	setPalette(bgpal);
+
+	setMinimumWidth(350);
+	setMinimumHeight(160);
+	setWindowFlags(Qt::FramelessWindowHint);
+	setStyleSheet("QPushButton{background-color: rgb(80, 80, 80);"
+		"color: rgb(217, 217, 217);"
+		"border-style: outset;"
+		"border-width: 0px;"
+		"border-color: beige;"
+		"font: bold 14px;"
+		"padding: 6px;"
+		"text-align: center;}"
+		"QPushButton:hover{background-color: rgb(100, 100, 100)}"
+		"QLabel{background-color: rgb(57, 63, 63);"
+		"color: rgb(217, 217, 217);"
+		"border-style: inset;"
+		"border-width: 0px;"
+		"border-color: rgb(45, 45, 45);"
+		"font: bold 14px;"
+		"padding: 6px;}"
+		"QLineEdit{background-color: rgb(51, 51, 51);"
+		"color: rgb(217, 217, 217);"
+		"border-style: inset;"
+		"border-width: 1px;"
+		"border-color: rgb(45, 45, 45);"
+		"font: bold 14px;"
+		"padding: 6px;}");
 }
 
 void MyLogInDialog::cancel()

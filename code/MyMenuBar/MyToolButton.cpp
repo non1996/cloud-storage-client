@@ -1,3 +1,4 @@
+# pragma execution_character_set("utf-8")
 #include "MyToolButton.h"
 
 MyToolButton::MyToolButton(QWidget* parent)
@@ -11,7 +12,7 @@ MyToolButton::MyToolButton(const QString &_strImage, const QString &_strInfo, QW
 {
     //文本颜色
     QPalette objPalette = palette();
-    objPalette.setColor(QPalette::ButtonText, QColor(100, 100, 100));
+    objPalette.setColor(QPalette::ButtonText, QColor(217, 217, 217));
     setPalette(objPalette);
     //文本粗体
     QFont &objFont = const_cast<QFont &>(font());
@@ -54,9 +55,9 @@ void MyToolButton::painterinfo(int topPartOpacity, int bottomPartOpacity, QPaint
     QPen pen(Qt::NoBrush, 1);
     painter->setPen(pen);
     QLinearGradient linear(rect().topLeft(), rect().bottomLeft());
-    linear.setColorAt(0, QColor(061, 165, 252, topPartOpacity));
-    linear.setColorAt(0.5, QColor(061, 165, 252, 255));
-    linear.setColorAt(1, QColor(061, 165, 252, bottomPartOpacity));
+    linear.setColorAt(0, QColor(84, 93, 93, topPartOpacity));
+    linear.setColorAt(0.5, QColor(84, 93, 93, 255));
+    linear.setColorAt(1, QColor(84, 93, 93, bottomPartOpacity));
 
     QBrush brush(linear);
     painter->setBrush(brush);

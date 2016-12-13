@@ -17,11 +17,9 @@ private:
 	bool RecvFileName(std::string &name);
 
 	bool RecvFileType(std::string &type);
-
-//	virtual std::string GetLocalPath() {
-//		return downloadPath;
-//	}
-
+	virtual std::string &GetLocalPath() {
+		return downloadPath;
+	}
 public:
 	MyDownLoadMission();
 	virtual ~MyDownLoadMission();
