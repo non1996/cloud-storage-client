@@ -115,11 +115,7 @@ void MyFileBrowserPage::clickedUpload()
         QString filePath = *(fileNames.begin());
         QString fileName;
         int pos = filePath.lastIndexOf('/');
-        fileName = filePath.mid(pos + 1, filePath.length() - pos);
-//		qDebug() << filePath;
-//      qDebug() << pos;
-//      qDebug() << fileName;
-//      emit Upload(fileName);
+		fileName = filePath.mid(pos + 1, filePath.length() - pos);
 		emit AddUploadBar(fileName);
 		emit Upload(filePath);
     }

@@ -8,7 +8,8 @@
 #include "MyPasteErrorHint.h"
 #include "MyBase/MyController.h"
 #include "MyBase/MyController.h"
-
+#include "MyChat/MyChatBar.h"
+#include "MyChat/MyMessageDialog.h"
 
 #include <QTimer>
 #include <QPainter>
@@ -89,6 +90,16 @@ void MyMainWindow::UploadComplete(int i)
 	emit UploadComplete_signal(i);
 }
 
+void MyMainWindow::showMessage(std::string c, std::string m)
+{
+	emit ShowMessage(QString::fromStdString(c), QString::fromStdString(m));
+}
+
+void MyMainWindow::sendSuccess(std::string c, std::string m)
+{
+	emit ShowSendMessage(QString::fromStdString(c), QString::fromStdString(m));
+}
+
 void MyMainWindow::paintEvent(QPaintEvent *event)
 {
     QBitmap bitmap(size());
@@ -133,6 +144,10 @@ void MyMainWindow::InitWidget()
     lpError = new MyPasteErrorHint(this);
 	lpFileProperty = new MyFilePropertyHint(this);
 	lpFileProperty->hide();
+	lpChatBar = new MyChatBar(this);
+	lpChat = new MyMessageDialog(this);
+	lpChat->hide();
+	lpChat->setGeometry(600, 30, 330, 600);
 }
 
 void MyMainWindow::InitLayout()
@@ -143,6 +158,7 @@ void MyMainWindow::InitLayout()
     lpMainLayout->addWidget(lpTitleBar);
     lpMainLayout->addWidget(lpMenuBar);
     lpMainLayout->addWidget(lpPage);
+	lpMainLayout->addWidget(lpChatBar);
     this->setLayout(lpMainLayout);
 }
 
@@ -184,6 +200,12 @@ void MyMainWindow::InitSlot()
 	connect(this, SIGNAL(SetDownloadProgress_signal(int, float, unsigned int)), lpPage, SLOT(SetDownloadProgress(int, float, unsigned int)));
 	connect(this, SIGNAL(UploadComplete_signal(int)), lpPage, SLOT(UploadComplete(int)));
 	connect(this, SIGNAL(DownloadComplete_signal(int)), lpPage, SLOT(DownloadComplete(int)));
+
+	//chat
+	connect(lpChatBar, SIGNAL(ShowChat()), this, SLOT(showChatDialog()));
+	connect(lpChat, SIGNAL(send(QString, QString)), this, SLOT(send(QString, QString)));
+	connect(this, SIGNAL(ShowSendMessage(QString, QString)), lpChat, SLOT(AddSendMessage(QString, QString)));
+	connect(this, SIGNAL(ShowMessage(QString, QString)), lpChat, SLOT(AddRecvMessage(QString, QString)));
 }
 
 void MyMainWindow::setThisStyle()
@@ -361,7 +383,6 @@ void MyMainWindow::enterDir(QString name)
 			}
 			c->PushLsCommand(std::string("0"),
 				std::string(""),
-//				(c->GetControl()->GetManager()->GetCurrentDir() + name.toStdString() + "/"),
 				path + name.toStdString() + "/",
 				std::vector<std::string>());
 		}
@@ -447,6 +468,12 @@ void MyMainWindow::paste()
 	}
 }
 
+void MyMainWindow::send(QString cID, QString content)
+{
+	MyController* c = MyController::Instance();
+	c->PushSendCommand(cID.toStdString(), content.toStdString());
+}
+
 void MyMainWindow::showFileInfo(QString & name, QString & path, QString & date, QString & size, QString & type)
 {
 	lpFileProperty->setGeometry(300, 200, 200, 300);
@@ -472,7 +499,7 @@ void MyMainWindow::cancelD(int n)
 void MyMainWindow::openDirD(int n)
 {
 	QString path = "myDownload\\";
-//	path.replace("/", "\\");
+	path.replace("/", "\\");
 	QProcess::startDetached("explorer " + path);
 }
 
@@ -493,11 +520,18 @@ void MyMainWindow::cancelU(int n)
 
 void MyMainWindow::openDirU(int n)
 {
-	MyController* c = MyController::Instance();
-	showInfo(QString("%1").arg(n));
-//	std::string stdPath = c->GetControl()->GetUploadPath(n);    
-//	QString path = QString::fromStdString(stdPath);
-//	showInfo(path);
+//	MyController* c = MyController::Instance();
+//	showInfo(QString("%1").arg(n));
+}
+
+void MyMainWindow::showChatDialog()
+{
+	if (lpChat->isHidden()) {
+		lpChat->show();
+	}
+	else {
+		lpChat->hide();
+	}
 }
 
 void MyMainWindow::CleanAndClose()

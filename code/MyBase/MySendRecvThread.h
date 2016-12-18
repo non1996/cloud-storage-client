@@ -44,10 +44,6 @@ public:
 	
 	static void Release();
 
-	//these print method use for test
-	void TextOutExit() {
-		std::cout << "send and receive thread exit\n";
-	}
 };
 
 #endif // !MySendRecvThread

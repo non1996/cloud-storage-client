@@ -372,21 +372,7 @@ public:
 		username = un;
 		password = pw;
 	}
-/*
-	void split(std::string &str, char flag, std::vector<std::string> &v) {
-		int begin = 0;
-		for (int i = 0; i < str.size(); ++i) {
-			if (str.at(i) == flag && i != begin) {
-				v.push_back(str.substr(begin, i - begin));
-				begin = i + 1;
-			}
 
-		}
-		if (begin < str.size()) {
-			v.push_back(str.substr(begin, v.size() - begin));
-		}
-	}
-*/
 	virtual bool GetServerResponse(const char* info, int len) {
 		token = std::string(info, len);
 		return true;
@@ -400,6 +386,7 @@ public:
 
 class MyMessageCommand : public MyCommand {
 private:
+	std::string cID;
 	std::string content;
 
 public:
@@ -413,6 +400,21 @@ public:
 	virtual void Execute(MyControl*);
 
 	virtual std::string ToString() { return ""; }
+};
+
+class MySendCommand : public MyCommand {
+private:
+	std::string cID;
+	std::string content;
+
+public:
+	MySendCommand(std::string &cID, std::string &message);
+
+	virtual bool GetServerResponse(const char* info, int len);
+
+	virtual void Execute(MyControl*);
+
+	virtual std::string ToString();
 };
 
 class MyCommandBuilder {
@@ -469,6 +471,10 @@ public:
 
 	static MyMessageCommand* MakeMessageCommand() {
 		return new MyMessageCommand();
+	}
+
+	static MySendCommand* MakeSendCommand(std::string &cID, std::string &content) {
+		return new MySendCommand(cID, content);
 	}
 };
 #endif // !MYCOMMAND_H_ 

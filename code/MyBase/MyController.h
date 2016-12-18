@@ -105,8 +105,11 @@ public:
 	}
 
 	void PushLogInCommand(std::string &un, std::string &pw) {
-		std::cout << un << " " << pw << std::endl;
 		buffer->PutSendCommand(MyCommandBuilder::MakeLogInCommand(un, pw));
+	}
+
+	void PushSendCommand(std::string &cID, std::string &content) {
+		buffer->PutSendCommand(MyCommandBuilder::MakeSendCommand(cID, content));
 	}
 
 	void Close();

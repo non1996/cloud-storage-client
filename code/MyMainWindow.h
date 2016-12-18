@@ -13,6 +13,9 @@ class MyMenuBar;
 class MyPage;
 class MyPasteErrorHint;
 class MyFilePropertyHint;
+class MyChatBar;
+class MyMessageDialog;
+class MyMessageDialog;
 
 class MyMainWindow : public QFrame
 {
@@ -33,12 +36,19 @@ public:					//this function are invoke by control
 	void DownloadComplete(int i);
 	void UploadComplete(int i);
 
+	void showMessage(std::string, std::string);
+	void sendSuccess(std::string, std::string);
+
 	void showInfo(QString s);
+	
 signals:
 	void SetUploadProgress_signal(int, float, unsigned int);
 	void SetDownloadProgress_signal(int, float, unsigned int);
 	void DownloadComplete_signal(int);
 	void UploadComplete_signal(int);
+
+	void ShowMessage(QString, QString);
+	void ShowSendMessage(QString, QString);
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -68,6 +78,10 @@ private:
 
     MyPasteErrorHint* lpError;
 	MyFilePropertyHint* lpFileProperty;
+	
+	MyChatBar* lpChatBar;
+	MyMessageDialog* lpChat;
+
     QPoint last;
 
     bool isMoving;
@@ -91,7 +105,8 @@ private slots:
     void copy(QString);					//
     void cut(QString);					//
     void paste();						//
-
+	void send(QString, QString);
+	
 	void showFileInfo(QString &name, QString &path, QString &date, QString &size, QString &type);
 
 	//protocol did not support yet
@@ -104,6 +119,8 @@ private slots:
     void resumeU(int);
     void cancelU(int);
     void openDirU(int);					
+
+	void showChatDialog();
 
 	void CleanAndClose();
 };

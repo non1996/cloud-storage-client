@@ -20,6 +20,7 @@ private:
     void SetThisStyle();
     void SetWidgetStyle();
     void ConnectSlot();
+	void setIcon(QPushButton*, QString);
 private:
     QPushButton* lpBack;
     QPushButton* lpFront;

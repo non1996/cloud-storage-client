@@ -152,6 +152,10 @@ public:
 		return downloadManager->GetPath(n);
 	}
 
+	void ShowAlreadySendMessage(std::string &, std::string &);
+
+	void ShowReceiveMessage(std::string &, std::string &);
+
 	void Rename(std::string &, std::string &);
 
 	void Paste();

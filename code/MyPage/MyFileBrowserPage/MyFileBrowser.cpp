@@ -89,6 +89,7 @@ void MyFileBrowser::SetThisStyle()
 {
     setMinimumSize(950, 410);
 	lpListWidget->setStyleSheet("QListWidget{background-color:rgb(51, 51, 51);"
+		"outline:0px;"
 		"color:rgb(217, 217, 217);"
 		"border-style: inset;"
 		"border-width: 2px;"

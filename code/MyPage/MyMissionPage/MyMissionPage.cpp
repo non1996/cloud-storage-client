@@ -58,6 +58,7 @@ void MyMissionPage::SetThisStyle()
     lpPal->setColor(QPalette::Background, QColor(51, 51, 51));
 	setPalette(*lpPal);
 	lpMissionList->setStyleSheet("QListWidget{background-color:rgb(51, 51, 51);"
+		"outline:0px;"
 		"color:rgb(217, 217, 217);"
 		"border-style: inset;"
 		"border-width: 2px;"

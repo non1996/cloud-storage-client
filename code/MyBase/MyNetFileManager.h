@@ -38,14 +38,14 @@ public:
 	}
 
 	#pragma region Copy manage
-	std::string &GetCopyFileUID() {
+	std::string GetCopyFileUID() {
 		if (copyBuf) {
 			return copyBuf->GetUid();
 		}
 		return std::string("");
 	}
 
-	std::string &GetCopyFileName() {
+	std::string GetCopyFileName() {
 		if (copyBuf) {
 			return copyBuf->GetName();
 		}

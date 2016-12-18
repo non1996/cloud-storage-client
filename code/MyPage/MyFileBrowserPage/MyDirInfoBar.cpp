@@ -19,12 +19,13 @@ void MyDirInfoBar::InitWidget()
 {
     lpBack = new QPushButton("<", this);
     lpFront = new QPushButton(">", this);
-    lpFresh = new QPushButton("Ë¢ÐÂ", this);
+    lpFresh = new QPushButton(this);
 
-//    lpPath = new QLabel("home>", this);
 	lpPath = new QLabel(this);
     lpInputSearch = new QLineEdit(this);
-    lpSearch = new QPushButton("ËÑË÷", this);
+    lpSearch = new QPushButton(this);
+	setIcon(lpFresh, "image/fileBrowser/toolbar/refresh.png");
+	setIcon(lpSearch, "image/fileBrowser/toolbar/search.png");
 }
 
 void MyDirInfoBar::InitLayout()
@@ -93,6 +94,15 @@ void MyDirInfoBar::ConnectSlot()
     connect(lpFront, SIGNAL(clicked(bool)), this, SLOT(sendFront()));
     connect(lpFresh, SIGNAL(clicked(bool)), this, SLOT(sendFresh()));
     connect(lpSearch, SIGNAL(clicked(bool)), this, SLOT(sendSearch()));
+}
+
+void MyDirInfoBar::setIcon(QPushButton *b, QString n)
+{
+	QPixmap *pixmap = new QPixmap(22, 22);
+	pixmap->load(n);
+	QIcon *icon = new QIcon(*pixmap);
+	b->setIcon(*icon);
+	b->setIconSize(QSize(22, 22));
 }
 
 void MyDirInfoBar::sendBack()

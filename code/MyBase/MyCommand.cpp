@@ -41,12 +41,7 @@ void MyPutCommand::Execute(MyControl *c)
 void MyDeleteCommand::Execute(MyControl *c)
 {
 	if (isOk) {
-		std::cout << "200\n";
-//		c->GetManager()->DeleteNetFile(name);
 		c->DeleteNetFile(name);
-	}
-	else {
-		std::cout << "错误\n";
 	}
 }
 
@@ -66,9 +61,8 @@ bool MyDeleteCommand::GetServerResponse(const char * info, int len)
 
 void MyForkCommand::Execute(MyControl *c)
 {
-	std::cout << "haven't implement fork command" << std::endl;
 	if (isOk) {
-		std::cout << "200\n";
+
 	}
 }
 
@@ -92,8 +86,6 @@ bool MyLsCommand::GetServerResponse(const char * info, int len)
 	if (resOrContent == "error happens when querying files") {
 		isOk = false;
 	}
-	std::cout << "目录信息为:" << std::endl;
-	std::cout << resOrContent << std::endl;
 	isOk = true;
 	return true;
 }
@@ -119,7 +111,6 @@ void MyCopyCommand::Execute(MyControl *c)
 		c->Paste();
 	}
 	else {
-		std::cout << "复制不成功\n";
 	}
 }
 
@@ -161,8 +152,7 @@ bool MyMoveCommand::GetServerResponse(const char * info, int len)
 void MyShareCommand::Execute(MyControl *)
 {
 	if (isOk) {
-		std::cout << "200\n";
-		//	std::cout << "haven't implement share command" << std::endl;
+
 	}
 }
 
@@ -183,7 +173,6 @@ bool MyShareCommand::GetServerResponse(const char * info, int len)
 bool MyTouchCommand::GetServerResponse(const char * info, int len)
 {
 	if (len != 16) {
-		std::cout << "长度不对, len为:" << len << std::endl;
 		return false;
 	}
 	std::string res(info, len);
@@ -191,11 +180,9 @@ bool MyTouchCommand::GetServerResponse(const char * info, int len)
 	unsigned long long resNum = MyEnCoder::BytesToUll(res.substr(0, 8));
 	if (resNum == 200) {
 		uId = MyEnCoder::BytesToUll(res.substr(8, 8));
-		std::cout << "创建文件成功，uid是:" << uId << std::endl;
 		isOk = true;
 		return true;
 	}
-	std::cout << "创建文件失败,状态码为:" << resNum << std::endl;
 	return false;
 }
 
@@ -226,7 +213,6 @@ void MyLogInCommand::Execute(MyControl *c)
 		c->LogIn(username, password);
 		c->InitMessageSocket(token, username);
 		c->StartMessageSocket();
-		std::cout << "connect to server-------------------log in command\n";
 	}
 }
 
@@ -246,6 +232,41 @@ std::string MyLogInCommand::ToString()
 
 void MyMessageCommand::Execute(MyControl *c)
 {
-	std::cout << "not implement message yet\n";
-	std::cout << content << std::endl;
+	c->ShowReceiveMessage(cID, content);
+}
+
+MySendCommand::MySendCommand(std::string & cID, std::string & message)
+{
+	this->cID = cID;
+	this->content = message;
+}
+
+bool MySendCommand::GetServerResponse(const char * info, int len)
+{
+	if (len != 8) {
+		isOk = false;
+		return false;
+	}
+	std::string res(info, len);
+	unsigned long long resNum = MyEnCoder::BytesToUll(res);
+	if (resNum == 200) {
+		isOk = true;
+	}
+	return true;
+}
+
+void MySendCommand::Execute(MyControl *c)
+{
+	if (isOk) {
+		c->ShowAlreadySendMessage(cID, content);
+	}
+}
+
+std::string MySendCommand::ToString()
+{
+	std::stringstream ss;
+	ss << "send" << "+"
+		<< cID << "+"
+		<< content;
+	return ss.str();
 }

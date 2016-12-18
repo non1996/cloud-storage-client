@@ -55,12 +55,11 @@ void MyLogInDialog::ok()
 		username = lpUsername->text().toStdString();
 		password = lpPassword->text().toStdString();
 		c->PushLogInCommand(username, password);
-		while (!c->GetControl()->IsLogIn()) {
-			if (!c->GetControl()->IsConnect()) {
-				lpHint->setText("用户名或密码错误");
-				return;
-			}
-			lpHint->setText("登录中..");
+
+		Sleep(1000);
+		if (!c->GetControl()->IsLogIn()) {
+			lpHint->setText("账户错误");
+			return;
 		}
 		c->PushLsCommand(std::string("0"), std::string(""), std::string("/"), std::vector<std::string>());
 		accept();

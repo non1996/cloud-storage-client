@@ -1,3 +1,4 @@
+
 #ifndef MYFBTOOLBAR_H
 #define MYFBTOOLBAR_H
 
@@ -34,6 +35,8 @@ private:
     QPushButton* lpNewDir;
 
     QPalette* lpPal;
+
+	void setIcon(QPushButton* b, QString path);
 
 signals:
     void Upload();

@@ -9,6 +9,9 @@ class MyTransmitThreadBase :
 private:
 	MySocket* sock;
 
+	std::string ServerIp;
+	int ServerPort;
+
 	std::string token;
 
 	bool isLogIn;
@@ -60,6 +63,8 @@ public:
 #pragma endregion
 
 	bool Init(const char* ipAddr, int port);
+
+	bool ReInit();
 
 	bool GetTokenFromServer();
 	

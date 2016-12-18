@@ -3,9 +3,6 @@
 
 #include <QLabel>
 #include <QPushButton>
-/*#include <QEvent>
-#include <QMouseEvent>
-#include <QApplication>*/
 
 MyTitleBar::MyTitleBar(QWidget *parent)
     :QWidget(parent)

@@ -27,7 +27,7 @@ void MyFBToolBar::createWidget()
     lpDownload = new QPushButton("下载", this);
     lpShare = new QPushButton("分享", this);
     lpDelete = new QPushButton("删除", this);
-    lpNewDir = new QPushButton("新建文件夹", this);
+    lpNewDir = new QPushButton("新建", this);
 
     lpUpload->setFixedSize(100, 40);
     lpDownload->setFixedSize(100, 40);
@@ -63,6 +63,12 @@ void MyFBToolBar::setToolBarStyle()
 
 void MyFBToolBar::setButtonStyle()
 {
+	setIcon(lpUpload, "image/fileBrowser/toolbar/upload.png");
+	setIcon(lpDownload, "image/fileBrowser/toolbar/download.png");
+	setIcon(lpShare, "image/fileBrowser/toolbar/share.png");
+	setIcon(lpDelete, "image/fileBrowser/toolbar/delete.png");
+	setIcon(lpNewDir, "image/fileBrowser/toolbar/new.png");
+
     setStyleSheet( "QPushButton{background-color: rgb(64, 64, 64);"
                    "color: rgb(217, 217, 217);"
                    "border-style: outset;"
@@ -92,4 +98,13 @@ void MyFBToolBar::clickedDelete(){
 
 void MyFBToolBar::clickedNewDir(){
     emit NewDir();
+}
+
+void MyFBToolBar::setIcon(QPushButton* b, QString path)
+{
+	QPixmap *pixmap = new QPixmap(22, 22);
+	pixmap->load(path);
+	QIcon *icon = new QIcon(*pixmap);
+	b->setIcon(*icon);
+	b->setIconSize(QSize(22, 22));
 }

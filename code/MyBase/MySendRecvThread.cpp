@@ -57,7 +57,6 @@ bool MySendRecvThread::InfoRight()
 	}
 	cmd->GetServerResponse(rcv.c_str(), rcv.size());
 	buffer->PutRecvCommand(cmd);
-	std::cout << "put commmand" << std::endl;
 	return true;
 }
 
@@ -67,7 +66,6 @@ bool MySendRecvThread::Communicate()
 		std::string readBuf;
 
 		buffer->GetSendCommand(&cmd);
-		std::cout << "send ----" << cmd->ToString() << std::endl;
 		if (GetSocket()->SendBytes(cmd->ToString(), GetToken().c_str()) == false) {
 			SetLogIn(false);
 			SetConnect(false);
@@ -78,10 +76,8 @@ bool MySendRecvThread::Communicate()
 			SetConnect(false);
 			return false;
 		}
-		std::cout << "recv finish\n";
 		cmd->GetServerResponse(readBuf.c_str(), readBuf.size());
 		buffer->PutRecvCommand(cmd);
-		std::cout << "put finish\n";
 	}
 	return true;
 }
@@ -91,28 +87,29 @@ void MySendRecvThread::Execute()
 	if (!IsInit()) {
 		return;
 	}
-
+	
 	while (!IsFinish()) {
 		if (!Connect()) {
-			std::cout << "connect failed --------sendRecv thread" << std::endl;
 			continue;
 		}
-		std::cout << "connect to server --------sendRecv thread" << std::endl;
 		if (!GetTokenFromServer()) {
-			std::cout << "connect broke --------sendRecv thread" << std::endl;
+			DisConnect();
+			ReInit();
 			continue;
 		}
-		std::cout << "get token " << GetToken() << " --------sendRecv thread" << std::endl;
 		if (!Certification()) {
-			std::cout << "connect broke --------sendRecv thread" << std::endl;
+			DisConnect();
+			ReInit();
 			continue;
 		}
-		std::cout << "log in! enter send receive loop --------sendRecv thread" << std::endl;
 		if (!Communicate()) {
-			std::cout << "connect broke --------sendRecv thread" << std::endl;
+			DisConnect();
+			ReInit();
 			continue;
 		}
 	}
+	std::ofstream fout("test2.txt", std::ios_base::ate);
+	fout << "sendrecv q\n";
 	DisConnect();
 }
 

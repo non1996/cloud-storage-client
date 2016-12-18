@@ -209,7 +209,6 @@ bool MyNetFileManager::ReplaceContent(std::vector<std::string>& fileInfo)
 		split(fileInfo[i], '+', temp);
 
 		if (temp.size() != 7) {
-			std::cout << "文件信息数量不为7\n";
 			continue;
 		}
 		if (temp[5] == "1") {

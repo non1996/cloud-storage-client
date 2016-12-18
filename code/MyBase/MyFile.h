@@ -46,12 +46,8 @@ public:
 	bool OpenWrite();
 	bool Close();
 
-	bool Write(const char*);
-
 	bool Write(const char* buf, unsigned long long expected, unsigned long long &fact, unsigned long long offset);
 	//第一个参数是数据写入的缓存，第二个参数是希望写入的字节数，第三个参数是实际写入的字节数，第四个参数是相对于文件开头的偏移量
-
-	bool Read(const char *buf);	//仅供测试
 
 	bool Read(char* buf, unsigned long long expected, unsigned long long &fact, unsigned long long offset);
 	//第一个参数是数据读出的缓存，第二个参数是希望读出的字节数，第三个参数是实际读出的字节数，第四个参数是相对于文件开头的偏移量

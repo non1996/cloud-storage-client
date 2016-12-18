@@ -119,12 +119,13 @@ void MyMissionInfoBar::SetWidgetStyle()
     lpProgress->setValue(0);
 	lpSpeed->setStyleSheet("QLabel{color:rgb(217, 217, 217);font: bold 14px;}");
     lpFileName->setStyleSheet("QLabel{color:rgb(217, 217, 217);font: bold 14px;}");
-    lpProgress->setStyleSheet("QProgressBar{border:1px solid #050505;"
-                              "height:30;"
-                              "border-color: rgb(55, 55, 55);"
-                              "text-align:center;"
-                              "color:rgb(217, 217, 217);"
-							  "font: bold 14px;"
+	lpProgress->setStyleSheet("QProgressBar{border:1px solid #050505;"
+								"height:30;"
+								"border-color: rgb(55, 55, 55);"
+								"text-align:center;"
+								"color:rgb(217, 217, 217);"
+								"font: bold 14px;"
+								"background-color: rgb(64, 64, 64);"
                               "border-radius:10px;}"
                               "QProgressBar::chunk{"
                               "border-top-left-radius: 10px;"

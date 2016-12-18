@@ -14,7 +14,6 @@ bool MyUpLoadMission::SendTouchCommand()
 		return false;
 	}
 	if (resp != "200") {
-		std::cout << "touch 错误" << std::endl;
 		return false;
 	}
 	if (false == GetSocket()->RecvBytes(resp, GetToken().c_str())) {
@@ -35,13 +34,13 @@ bool MyUpLoadMission::SendCommand()
 	MyFile::Size((localPath + fileName).c_str(), size);
 	ss_size << size;
 	ss_uID << uID;
-	std::cout << localPath << fileName << ss_size.str() << std::endl;
+//	std::cout << localPath << fileName << ss_size.str() << std::endl;
 
 	fileMD5 = MyEnCoder::PrivateFileMD5((localPath + fileName));
 	if (fileMD5.size() == 0) {
 		return false;
 	}
-	std::cout << "file md5 is:" << fileMD5 << std::endl;
+//	std::cout << "file md5 is:" << fileMD5 << std::endl;
 	cmd += "put+"					//PUT <SEP> UID <SEP> MD5
 		+ ss_uID.str() + "+"
 		+ ss_size.str() + "+"
@@ -101,35 +100,29 @@ void MyUpLoadMission::Execute()
 	MyMission::Execute();
 
 	if (false == SendCommand()) {
-		std::cout << "传输链接断开\n";
 		return;
 	}
 	ResponceType r = RecvResponse();
 	if (r == ResponceType::START) {
-		std::cout << "开始传输\n";
 		if (false == InitFile((localPath + fileName).c_str(), 0)) {
-			std::cout << "文件流初始化失败\n";
+
 		}else if (false == GetFile()->OpenRead()) {
-			std::cout << "文件打开失败\n";
+
 		}else if (false == SendFromReader()) {
-			std::cout << "上传失败\n";
+
 		}else {
-			std::cout << "上传成功\n";
 			std::string res;
 			GetSocket()->RecvBytes(res, GetToken().c_str());
-			std::cout << "结果码:" << MyEnCoder::BytesToUll(res) << std::endl;
 		}
 		SetFinish();
 		GetSocket()->disconnect();
 		GetFile()->Close();
 		return;
 	}else if (r == ResponceType::SUCCESS) {
-		std::cout << "文件已存在,上传成功\n";
 		CompleteChange();
 		GetSocket()->disconnect();
 		return;
 	}else {
-		std::cout << "上传失败，错误码为:" << r << std::endl;
 		GetSocket()->disconnect();
 		return;
 	}

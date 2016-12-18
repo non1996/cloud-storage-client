@@ -126,18 +126,14 @@ bool MyControl::Init() {
 	if (!InitSendRecvThread()) {
 		return false;
 	}
-	std::cout << "交互线程初始化成功----control\n";
 	if (!InitTransmitManager()) {
 		return false;
 	}
-	std::cout << "传输管理器初始化成功----control\n";
 	if (!StartSendRecvThread()) {
 		return false;
 	}
-	std::cout << "交互线程启动----control\n";
 	Start();
 	Resume();
-	std::cout << "控制线程启动----control\n";
 	return true;
 }
 
@@ -187,6 +183,16 @@ bool MyControl::NewMissionU(std::string & fileName, unsigned long long uID, std:
 	uploadManager->NewMission(temp);
 //	mainWindow->AddUploadMission(fileName);
 	return true;
+}
+
+void MyControl::ShowAlreadySendMessage(std::string &c, std::string &m)
+{
+	mainWindow->sendSuccess(c, m);
+}
+
+void MyControl::ShowReceiveMessage(std::string &c, std::string &m)
+{
+	mainWindow->showMessage(c, m);
 }
 
 void MyControl::Rename(std::string &oldName, std::string &newName)
@@ -288,11 +294,9 @@ void MyControl::DeleteNetFile(std::string & name)
 void MyControl::GetProgress(MyMissionManager* m, int i, float pro, unsigned int speed)
 {
 	if (m == downloadManager) {
-		std::cout << "下载任务" << i << "的进度为 " << pro << std::endl;
 		mainWindow->SetDownloadProgress(i, pro, speed);
 	}
 	else if (m == uploadManager) {
-//		std::cout << "上传任务" << i << "的进度为 " << pro << std::endl;
 		mainWindow->SetUploadProgress(i, pro, speed);
 	}
 }
@@ -310,17 +314,13 @@ void MyControl::Complete(MyMissionManager* m, int i)
 void MyControl::CloseAllTransmit()
 {
 	sendRecv->Close();
-	std::cout << "sendRecv退出\n";
 	sendRecv->DisConnect();
 	if (recv) {
 		recv->Close();
-		std::cout << "recv退出\n";
 		recv->DisConnect();
 	}
 	downloadManager->CloseAllThread();
-	std::cout << "关闭所有下载线程\n";
 	uploadManager->CloseAllThread();
-	std::cout << "关闭所有上传线程\n";
 }
 
 void MyControl::Execute()
@@ -331,7 +331,6 @@ void MyControl::Execute()
 		temp->Execute(this);
 		Cleaner::Delete<MyCommand*>(&temp);
 	}
-	std::cout << "control quit\n";
 }
 
 MyControl * MyControl::Instance()

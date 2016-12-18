@@ -33,13 +33,11 @@ std::string MyEnCoder::PrivateFileMD5(std::string & fileName)
 		file.clear();
 		file.read(buf, expected);
 		actually = file.gcount();
-		std::cout << actually << std::endl;
 		connectMD5 += MyEnCoder::MD5(std::string(buf, actually));
 		if (actually < expected) {
 			break;
 		}
 	}
-	std::cout << connectMD5 << std::endl;
 	transform(connectMD5.begin(), connectMD5.end(), connectMD5.begin(), ::tolower);
 	delete[] buf;
 	return MyEnCoder::MD5(connectMD5);

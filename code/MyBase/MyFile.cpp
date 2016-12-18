@@ -61,12 +61,6 @@ bool MyFile::Close()
 	return false;
 }
 
-bool MyFile::Write(const char *buf)
-{
-	std::cout << buf << std::endl;
-	return true;
-}
-
 bool MyFile::Write(const char * buf, unsigned long long expected, unsigned long long & fact, unsigned long long offset)
 {
 	if(IsRead()){
@@ -97,31 +91,11 @@ bool MyFile::Read(char *buf, unsigned long long expected, unsigned long long & f
 	return true;
 }
 
-bool MyFile::Read(const char *buf)
-{
-	std::cout << "read file\n";
-	
-	return true;
-}
-
 bool MyFile::MakeDir(const char * name)
 {
-//	std::string mkdir = "mkdir";
-//	mkdir += " ";
-//	mkdir += name;
-//	std::cout << mkdir << std::endl;
-
-//	if (-1 == system(mkdir.c_str())) {
-//		std::cout << "创建文件夹失败\n";
-//		return false;
-//	}
-//	std::cout << "创建文件夹成功\n";
-
 	if (0 == CreateDirectoryA(name, NULL)) {
-		std::cout << "创建文件夹失败\n";
 		return false;
 	}
-	std::cout << "创建文件夹成功\n";
 	return true;
 }
 
@@ -153,7 +127,6 @@ bool MyFile::CreateEmptyFile(const char * name, unsigned long long size)
 {
 	std::ofstream fout;
 //	if (Exist(name)) {
-//		std::cout << "文件已存在" << std::endl;
 //		return false;
 //	}
 	fout.open(name, std::ios_base::ate);

@@ -39,7 +39,6 @@ public:
 			return true;
 		}
 		CloseHandle(HThread);
-		std::cout << "this thread is closed\n";
 		SetStateClose();
 		return true;
 	}

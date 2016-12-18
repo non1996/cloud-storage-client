@@ -119,9 +119,7 @@ public:
 		unsigned long long temp = 0;
 		for (int i = 0; i < 8; ++i) {
 			temp = temp << 8;
-//			temp += (unsigned int)c[i];
 			temp ^= 0xff & c[i];
-//			std::cout << "temp is:" << temp << std::endl;
 		}
 		return temp;
 	}
@@ -130,7 +128,6 @@ public:
 		unsigned long long temp = 0;
 		for (int i = 0; i < 8; ++i) {
 			temp = temp << 8;
-//			temp += (unsigned int)c[i];
 			temp ^= 0xff & c[i];
 		}
 		return temp;
