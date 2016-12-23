@@ -4,6 +4,10 @@
 #include <string>
 #include <fstream>
 
+
+//-------------------------------------------------
+//	用户信息类
+//-------------------------------------------------
 class MyUserInfo
 {
 private:
@@ -15,7 +19,7 @@ private:
 	std::string username;
 	std::string password;
 	
-	//记录当前用户的进度	
+	//记录当前用户的进度
 	std::fstream processFile;
 
 	bool isLogIn;
@@ -48,6 +52,7 @@ public:
 	//用户登陆以获取用户信息
 	bool LogIn(std::string &un, std::string &pw);					//到时候修改
 
+	//以下函数暂未实现
 	bool HasLogInBefore(std::string &un, std::string &fileName);		
 
 	void LogOut();

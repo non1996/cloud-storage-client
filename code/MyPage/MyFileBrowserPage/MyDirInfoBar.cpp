@@ -20,12 +20,21 @@ void MyDirInfoBar::InitWidget()
     lpBack = new QPushButton("<", this);
     lpFront = new QPushButton(">", this);
     lpFresh = new QPushButton(this);
+	lpHome = new QPushButton(this);
 
 	lpPath = new QLabel(this);
     lpInputSearch = new QLineEdit(this);
     lpSearch = new QPushButton(this);
+
+	lpBack->setToolTip("回到上级");
+	lpFront->setToolTip("上一个访问的目录");
+	lpFresh->setToolTip("刷新");
+	lpHome->setToolTip("回到根目录");
+	lpSearch->setToolTip("查找");
+
 	setIcon(lpFresh, "image/fileBrowser/toolbar/refresh.png");
 	setIcon(lpSearch, "image/fileBrowser/toolbar/search.png");
+	setIcon(lpHome, "image/fileBrowser/toolbar/home.png");
 }
 
 void MyDirInfoBar::InitLayout()
@@ -37,6 +46,7 @@ void MyDirInfoBar::InitLayout()
     lpMainLayout->addWidget(lpBack);
     lpMainLayout->addWidget(lpFront);
     lpMainLayout->addWidget(lpFresh);
+	lpMainLayout->addWidget(lpHome);
     lpMainLayout->addWidget(lpPath);
     lpMainLayout->addWidget(lpInputSearch);
     lpMainLayout->addWidget(lpSearch);
@@ -59,6 +69,7 @@ void MyDirInfoBar::SetWidgetStyle()
     lpBack->setMinimumSize(40, 40);
     lpFront->setMinimumSize(40, 40);
     lpFresh->setMinimumSize(40, 40);
+	lpHome->setMinimumSize(40, 40);
     lpPath->setFixedSize(500, 30);
     lpInputSearch->setMinimumSize(100, 30);
     lpSearch->setMinimumSize(40, 40);
@@ -93,6 +104,7 @@ void MyDirInfoBar::ConnectSlot()
     connect(lpBack, SIGNAL(clicked(bool)), this, SLOT(sendBack()));
     connect(lpFront, SIGNAL(clicked(bool)), this, SLOT(sendFront()));
     connect(lpFresh, SIGNAL(clicked(bool)), this, SLOT(sendFresh()));
+	connect(lpHome, SIGNAL(clicked(bool)), this, SLOT(sendHome()));
     connect(lpSearch, SIGNAL(clicked(bool)), this, SLOT(sendSearch()));
 }
 
@@ -125,6 +137,11 @@ void MyDirInfoBar::sendSearch()
     if(!lpInputSearch->text().isEmpty()){
         emit Search(lpInputSearch->text());
     }
+}
+
+void MyDirInfoBar::sendHome()
+{
+	emit Home();
 }
 
 

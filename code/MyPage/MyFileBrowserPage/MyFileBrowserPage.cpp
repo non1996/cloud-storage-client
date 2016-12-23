@@ -81,6 +81,7 @@ void MyFileBrowserPage::ConnectSlot()
     connect(lpDirBar, SIGNAL(Back()), this, SLOT(clickedBack()));
     connect(lpDirBar, SIGNAL(Front()), this, SLOT(clickedFront()));
     connect(lpDirBar, SIGNAL(Fresh()), this, SLOT(clickedRefresh()));
+	connect(lpDirBar, SIGNAL(Home()), this, SLOT(clickedHome()));
     connect(lpDirBar, SIGNAL(Search(QString)), this, SLOT(clickedSearch(QString)));
 
     connect(lpBrowser, SIGNAL(Open()), this, SLOT(clickedOpen()));
@@ -135,8 +136,13 @@ void MyFileBrowserPage::clickedShare()
     if(!lpBrowser->HasFileFocus()){
         return ;
     }
-    QString name = lpBrowser->GetSeletedFileName();
-    emit Share(name);
+	MyNewDirDialog* sharedialog = new MyNewDirDialog(this);
+	sharedialog->SetHint("输入4位提取码");
+	if (sharedialog->exec() == QDialog::Accepted) {
+		QString name = lpBrowser->GetSeletedFileName();
+		QString pass = sharedialog->GetContent();
+		emit Share(name, pass);
+	}
 }
 
 void MyFileBrowserPage::clickedDelete()
@@ -157,7 +163,6 @@ void MyFileBrowserPage::clickedAdd()
 {
     lpDialog->Clean();
     if(lpDialog->exec() == QDialog::Accepted){
-//        lpBrowser->AddDirector(lpDialog->GetContent());
         emit NewDir(lpDialog->GetContent());
     }
 }
@@ -175,6 +180,11 @@ void MyFileBrowserPage::clickedFront()
 void MyFileBrowserPage::clickedRefresh()
 {
     emit Refresh();
+}
+
+void MyFileBrowserPage::clickedHome()
+{
+	emit Home();
 }
 
 void MyFileBrowserPage::clickedSearch(QString name)

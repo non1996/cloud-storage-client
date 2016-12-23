@@ -18,8 +18,8 @@ void MyFileListWidget::InitAction()
     lpRename = new QAction("重命名", this);
     lpProperty = new QAction("属性", this);
 
-    lpPaste = new QAction("paste", this);
-    lpNewDir = new QAction("new director", this);
+    lpPaste = new QAction("粘贴", this);
+    lpNewDir = new QAction("新建", this);
 }
 
 void MyFileListWidget::ConnectSlot()

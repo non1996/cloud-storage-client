@@ -16,6 +16,9 @@ MyLogInDialog::MyLogInDialog(QWidget* parent)
     lpUsername->setPlaceholderText("输入用户名");
     lpPassword = new QLineEdit("TESTTHISPASSWORD", this);
     lpPassword->setPlaceholderText("输入密码");
+	lpPassword->setEchoMode(QLineEdit::Password);
+	lpUsername->setMinimumWidth(280);
+	lpPassword->setMinimumWidth(280);
 
     lpLogIn = new QPushButton("登录", this);
     lpCancel = new QPushButton("取消", this);
@@ -31,13 +34,15 @@ MyLogInDialog::MyLogInDialog(QWidget* parent)
 	lpMainLayout->addLayout(lpSubLayout3);
 
     lpSubLayout1->addWidget(lpU);
+	lpSubLayout1->addStretch();
     lpSubLayout1->addWidget(lpUsername);
     lpSubLayout2->addWidget(lpP);
-    lpSubLayout2->addWidget(lpPassword);
+	lpSubLayout2->addStretch();
+	lpSubLayout2->addWidget(lpPassword);
     lpSubLayout3->addWidget(lpLogIn);
     lpSubLayout3->addWidget(lpCancel);
     setLayout(lpMainLayout);
-
+	setAutoFillBackground(true);
     connect(lpLogIn, SIGNAL(clicked(bool)), this, SLOT(ok()));
     connect(lpCancel, SIGNAL(clicked(bool)), this, SLOT(cancel()));
 	SetStyle();
@@ -55,12 +60,14 @@ void MyLogInDialog::ok()
 		username = lpUsername->text().toStdString();
 		password = lpPassword->text().toStdString();
 		c->PushLogInCommand(username, password);
-
+		//发送登陆命令后，等待1秒
+		//这里是简化线程间的同步问题，有点偷懒
 		Sleep(1000);
 		if (!c->GetControl()->IsLogIn()) {
 			lpHint->setText("账户错误");
 			return;
 		}
+		//如果登陆成功则要求服务器发送根目录文件信息
 		c->PushLsCommand(std::string("0"), std::string(""), std::string("/"), std::vector<std::string>());
 		accept();
 	}

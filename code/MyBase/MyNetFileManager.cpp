@@ -96,7 +96,6 @@ bool MyNetFileManager::Paste()
 	if (!HasCopyFile()) {
 		return false;
 	}
-//	MyNetFileBase* temp = new MyNetFileBase(*(copyBuf));
 	MyNetFileBase* temp = copyBuf->Copy();
 	temp->SetPath(GetCurrentDir());
 	std::pair<std::map<std::string, MyNetFileBase*>::iterator, bool> ret;
@@ -105,6 +104,7 @@ bool MyNetFileManager::Paste()
 		Cleaner::Delete<MyNetFileBase*>(&temp);
 		return false;
 	}
+	isCopy = true;
 	return true;
 }
 
@@ -158,18 +158,6 @@ bool MyNetFileManager::Rename(std::string & oldName, std::string & newName)
 	files.erase(hresult);
 	return true;
 }
-/*
-bool MyNetFileManager::ToParentDir()
-{
-	if (IsRootDir()){
-		return false;
-	}
-	path.erase(path.end() - 1);
-	if (path.size() == 1) {
-		GetToRoot();
-	}
-	return true;
-}*/
 
 bool MyNetFileManager::EnterDir(std::string &dirName)
 {
@@ -288,26 +276,4 @@ MyNetFileManager * MyNetFileManager::Instance()
 void MyNetFileManager::Release()
 {
 	Cleaner::Delete<MyNetFileManager*>(&instance);
-}
-
-std::string MyNetFileManager::ToString()
-{
-	std::stringstream ss;
-	ss << "path:\t";
-	for (int i = 0; i < path.size(); ++i) {
-		ss << path.at(i) << "/";
-	}
-	ss << "\n";
-
-	for (std::map<std::string, MyNetFileBase*>::iterator iter = files.begin();
-		iter != files.end();
-		++iter) {
-		ss	<< iter->second->GetUid() << "\t"
-			<< iter->second->GetPath() << "\t"
-			<< iter->second->GetName() << "\t"
-			<< iter->second->GetDate() << "\t"
-			<< iter->second->GetSize() << "\t"
-			<< iter->second->GetType() << "\n";
-	}
-	return ss.str();
 }

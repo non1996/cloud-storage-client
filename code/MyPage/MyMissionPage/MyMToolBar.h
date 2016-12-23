@@ -6,6 +6,9 @@
 #include <QHBoxLayout>
 #include <QLabel>
 
+//------------------------------------------------
+//	传输页面工具栏
+//------------------------------------------------
 class MyMToolBar : public QWidget
 {
     Q_OBJECT

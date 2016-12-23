@@ -59,13 +59,16 @@ bool MyRecvThread::Communicate()
 	std::string recv;
 	while (!IsFinish()) {
 		recv.clear();
+		//被动监听服务器发来的消息，
+		//如果是保活信息则忽略
+		//否则放入命令队列
 		if (false == GetSocket()->RecvBytes(recv, GetToken().c_str())) {
 			return false;
 		}
-		if (recv == "[check]") {			//保活信息
+		if (recv == "[check]") {							//保活信息
 			continue;
 		}
-		temp = MyCommandBuilder::MakeMessageCommand();
+		temp = MyCommandBuilder::MakeMessageCommand();		
 		temp->GetServerResponse(recv.c_str(), recv.size());
 		buffer->PutRecvCommand(temp);
 	}
@@ -79,15 +82,18 @@ void MyRecvThread::Execute()
 	}
 	while (!IsFinish()) {
 		if (!Connect()) {
-			Sleep(10000);
+			DisConnect();
+			ReInit();
 			continue;
 		}
 		if (!GetTokenFromServer()) {
-			Sleep(10000);
+			DisConnect();
+			ReInit();
 			continue;
 		}
 		if (!Certification()) {
-			Sleep(10000);
+			DisConnect();
+			ReInit();
 			continue;
 		}
 		else {

@@ -4,12 +4,22 @@
 #include <QWidget>
 #include <QLabel>
 
+//-----------------------------------
+//	错误提示，好像没必要再继承一遍
+//-----------------------------------
 class MyPasteErrorHint : public QWidget
 {
     Q_OBJECT
 public:
     explicit MyPasteErrorHint(QWidget *parent = 0);
-	void SetHint(QString str);
+	void SetHint(const QString &str);
+	
+	void ShareOK();
+	void ShareFalled();
+
+	void EmptyHint();
+	void ExistHint();
+	void NetBroken();
 private:
     QLabel* lpHint;
 

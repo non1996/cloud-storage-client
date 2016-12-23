@@ -7,13 +7,15 @@
 #include <QHBoxLayout>
 
 class MyToolButton;
+//---------------------------------------------
+//	文件浏览器界面工具栏
+//---------------------------------------------
 class MyFBToolBar : public QWidget
 {
     Q_OBJECT
 public:
     explicit MyFBToolBar(QWidget *parent = 0);
 
-//    void paintEvent(QPaintEvent *e);
 private:
     void createWidget();
 
@@ -28,11 +30,13 @@ private:
 private:
     QHBoxLayout* lpLayout;
 
-    QPushButton* lpUpload;
-    QPushButton* lpDownload;
-    QPushButton* lpShare;
-    QPushButton* lpDelete;
-    QPushButton* lpNewDir;
+    QPushButton* lpUpload;		//上传按钮
+    QPushButton* lpDownload;	//下载按钮
+    QPushButton* lpShare;		//共享按钮
+	QPushButton* lpFork;		//fork按钮
+	QPushButton* lpDelete;		//删除按钮
+    QPushButton* lpNewDir;		//新建文件夹按钮
+	
 
     QPalette* lpPal;
 
@@ -44,6 +48,7 @@ signals:
     void Share();
     void Delete();
     void NewDir();
+	void Fork();
 
 private slots:
     void clickedUpload();
@@ -51,7 +56,7 @@ private slots:
     void clickedShare();
     void clickedDelete();
     void clickedNewDir();
-
+	void clickedFork();
 };
 
 #endif // MYTOOLBAR_H

@@ -9,6 +9,9 @@
 class MyFileBrowserPage;
 class MyMissionPage;
 
+//---------------------------------------------------
+//	维护三个页面，并控制它们切换
+//---------------------------------------------------
 class MyPage : public QWidget
 {
     Q_OBJECT
@@ -42,22 +45,23 @@ private:
     void ConnectSlot();
 
 private:
-    QStackedLayout* lpStackLayout;
+    QStackedLayout* lpStackLayout;		//用于切换页面的布局
     QVBoxLayout* lpMainLayout;
 
-    MyFileBrowserPage* lpFileBrowser;
-    MyMissionPage* lpDownload;
-    MyMissionPage* lpUpload;
+    MyFileBrowserPage* lpFileBrowser;	//文件浏览器界面
+    MyMissionPage* lpDownload;			//下载界面
+    MyMissionPage* lpUpload;			//上传界面
 
 signals:
     void Download(QString);
     void Upload(QString);
-    void Share(QString);
+    void Share(QString, QString);
     void Delete(QString);
     void NewDir(QString);
     void Back();
     void Front();
     void Refresh();
+	void Home();
     void Search(QString);
 
     void EnterDir(QString);
@@ -82,12 +86,13 @@ public slots:
 private slots:
     void sendDownloadSignal(QString);
     void sendUploadSignal(QString);
-    void sendShareSignal(QString);
+    void sendShareSignal(QString, QString);
     void sendDeleteSignal(QString);
     void sendNewDirSignal(QString);
     void sendBackSignal();
     void sendFrontSignal();
     void sendRefreshSignal();
+	void sendHomeSignal();
     void sendSearchSignal(QString);
 
     void sendEnterDirSignal(QString);

@@ -27,11 +27,10 @@ public:
 	//则任务添加后挂起，否则任务添加后直接执行
 	bool NewMission(MyMission* m);
 
-//	void SpeedChange(MyMission*, unsigned int speed);
 	void ProgressChange(MyMission*, float progress, unsigned int speed);
 	void CompleteChange(MyMission*);
 
-#pragma region GetAndSet
+	#pragma region GetAndSet
 	void SetMaxCurrency(const int mc) {
 		maxCurrency = mc;
 	}
@@ -56,7 +55,7 @@ public:
 		if (missionList.size() == 0) {
 			return "";
 		}
-		if (missionList.size() <= n) {
+		if (missionList.size() <= (unsigned int)n) {
 			missionList.back()->GetLocalPath();
 		}
 		return missionList.at(n)->GetLocalPath();
@@ -66,28 +65,29 @@ public:
 		return currentTrans == maxCurrency;
 	}
 
-#pragma endregion
+	#pragma endregion
 
-#pragma region MissionManage
+	#pragma region MissionManage
 	//继续运行传输线程，传入参数为线程下标
 	//如果下标越界，返回false
 	//否则执行线程的resume函数，并返回其返回值
-	bool Resume(int pos);
+	bool Resume(unsigned int pos);
+	bool ResumeAll();
 
 	//挂起传输线程（即暂停），传入参数为线程下标
 	//如果下标越界，返回false
 	//否则执行线程的挂起函数，并返回其返回值
-	bool Suspend(int pos);
+	bool Suspend(unsigned int pos);
 	bool Suspend(std::vector<int> &poss);
 	bool SuspendAll();
 
-	bool Cancel(int pos);
+	bool Cancel(unsigned int pos);
 	bool CancelAll();
 
 	//程序退出时终止所有未传输完的线程
 	void CloseAllThread();
 
-#pragma endregion
+	#pragma endregion
 
 	void Release();
 };

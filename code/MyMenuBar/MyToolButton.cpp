@@ -24,7 +24,6 @@ MyToolButton::MyToolButton(const QString &_strImage, const QString &_strInfo, QW
     resize(100, 100);
     setIcon(QPixmap(strImage));
     setText(strInfo);
-
     connect(this, SIGNAL(pressed()), this, SLOT(SlotPressed()));
 }
 

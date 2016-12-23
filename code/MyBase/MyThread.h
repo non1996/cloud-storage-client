@@ -6,6 +6,9 @@
 #include <Windows.h>
 #include <iostream>
 
+//---------------------------------------
+//	封装了windows线程的线程类
+//---------------------------------------
 class MyThread {
 private:
 	enum State{
@@ -67,6 +70,7 @@ public:
 		return true;
 	}
 
+	//子类重写Execute函数来实现自己的功能
 	virtual void Execute() = 0;
 
 	static DWORD WINAPI ThdMain(LPVOID param) {
@@ -102,6 +106,9 @@ public:
 	#pragma endregion
 };
 
+//-----------------------------------
+//	对信号量的封装
+//-----------------------------------
 class MySemaphore
 {
 private:
@@ -114,6 +121,9 @@ public:
 	void Signal();
 };
 
+//-----------------------------------
+//	对互斥锁的封装
+//-----------------------------------
 class MyMutex
 {
 private:

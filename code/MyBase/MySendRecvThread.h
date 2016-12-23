@@ -7,20 +7,17 @@
 #include "MyTransmitThreadBase.h"
 #include "MyCommandBuffer.h"
 
+//------------------------------------------------
+//	主传输线程
+//	从发送队列中取出数据，并发送给服务器
+//------------------------------------------------
 class MySendRecvThread
 	:public MyTransmitThreadBase
 {
 private:
-	static MySendRecvThread* instance;
+	static MySendRecvThread* instance;	//单例模式
 
-	//---------------------------------------------------------
-	//	a referance of command buffer.
-	//	Thread get command from send buffer and send command to server,
-	//	and while receiving a command from server, the command is put into
-	//	receive buffer. The control thread then catches this command and
-	//	performs the corresponding operation 
-	//---------------------------------------------------------
-	MyCommandBuffer* buffer;		
+	MyCommandBuffer* buffer;			//维护对命令队列的引用
 	MyCommand* cmd = 0;	
 
 	bool isQuit;
@@ -32,9 +29,11 @@ public:
 
 	bool Init(const char* ipAddr, int port);
 
-	virtual std::string GetCertificationInfo();
+	virtual std::string GetCertificationInfo();	//定义了父类的验证函数
 
-	virtual bool InfoRight();
+	virtual bool InfoRight();				
+
+	bool GetUserInfo();
 
 	bool Communicate();
 

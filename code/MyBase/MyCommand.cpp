@@ -149,10 +149,13 @@ bool MyMoveCommand::GetServerResponse(const char * info, int len)
 	return true;
 }
 
-void MyShareCommand::Execute(MyControl *)
+void MyShareCommand::Execute(MyControl *c)
 {
 	if (isOk) {
-
+		c->ShowShareInfo(true);
+	}
+	else {
+		c->ShowShareInfo(false);
 	}
 }
 
@@ -213,6 +216,7 @@ void MyLogInCommand::Execute(MyControl *c)
 		c->LogIn(username, password);
 		c->InitMessageSocket(token, username);
 		c->StartMessageSocket();
+		c->ResumeAllNotComplete();
 	}
 }
 
@@ -260,6 +264,9 @@ void MySendCommand::Execute(MyControl *c)
 	if (isOk) {
 		c->ShowAlreadySendMessage(cID, content);
 	}
+	else {
+		c->ShowAlreadySendMessage(cID, std::string("error"));
+	}
 }
 
 std::string MySendCommand::ToString()
@@ -269,4 +276,19 @@ std::string MySendCommand::ToString()
 		<< cID << "+"
 		<< content;
 	return ss.str();
+}
+
+bool MySetInfoCommand::GetServerResponse(const char * info, int len)
+{
+	return false;
+}
+
+void MySetInfoCommand::Execute(MyControl *c)
+{
+	c->SetUserInfo(name, url, currentVolume, totalVolume);
+}
+
+std::string MySetInfoCommand::ToString()
+{
+	return std::string();
 }

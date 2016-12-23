@@ -11,6 +11,9 @@ class MyDirInfoBar;
 class MyFileBrowser;
 class MyNewDirDialog;
 
+//------------------------------------------
+//	文件浏览器界面
+//------------------------------------------
 class MyFileBrowserPage : public QWidget
 {
     Q_OBJECT
@@ -31,27 +34,27 @@ private:
 private:
     QVBoxLayout* lpMainLayout;
 
-    MyFBToolBar* lpToolBar;
-    MyDirInfoBar* lpDirBar;
-    MyFileBrowser* lpBrowser;
-    MyNewDirDialog* lpDialog;
+    MyFBToolBar* lpToolBar;		//文件工具栏
+    MyDirInfoBar* lpDirBar;		//文件夹信息
+    MyFileBrowser* lpBrowser;	//文件浏览器
+    MyNewDirDialog* lpDialog;	//新建文件夹对话框
 
     QPalette* lpPal;
 
 signals:
     void Download(QString);
     void Upload(QString);
-    void Share(QString);
+    void Share(QString, QString);
     void Delete(QString);
     void NewDir(QString);
 
     void Back();
     void Front();
     void Refresh();
+	void Home();
     void Search(QString);
 
     void Open(QString);
-    //oldname, newname
     void Rename(QString, QString);
     void Property(QString);
     void Copy(QString);
@@ -60,7 +63,7 @@ signals:
 
 	void AddUploadBar(QString);
 private slots:
-    //toolbar
+    //与工具栏相关的信号槽
     void showDialog();
     void clickedUpload();
     void clickedDownload();
@@ -68,13 +71,14 @@ private slots:
     void clickedDelete();
     void clickedAdd();
 
-    //dirInfoBar
+    //与文件夹信息栏相关的信号槽
     void clickedBack();
     void clickedFront();
     void clickedRefresh();
+	void clickedHome();
     void clickedSearch(QString);
 
-    //filebrowser
+    //与文件浏览器相关的信号槽
     void clickedOpen();
     void clickedRename();
     void clickedProperty();

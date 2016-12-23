@@ -13,7 +13,7 @@
 class MyMissionManager;
 
 //-------------------------------------------------
-//	base class of file transfer mission
+//	文件下载和上传线程的基类
 //-------------------------------------------------
 class MyMission :
 	public MyTransmitThreadBase
@@ -23,35 +23,36 @@ private:
 
 	unsigned long long currentSize;					
 
-	std::string fID;		//file ID on server
-	std::string username;
+	std::string fID;					//保存文件的id
+	std::string username;				//用户信息和秘钥用于验证
 	std::string password;
 	std::string token_one;
+	
+	bool isComplete;					//标记传输是否完成
 
-	clock_t start, end;
+	clock_t start, end;					//计算传输速率
 	unsigned long long bytesPerSecond;
 
-	MyMissionManager* manager; //listener
+	MyMissionManager* manager;			//状态改变时向上通知
 
 protected:
 	MyFile* GetFile() {
 		return file;
 	}
 
-	std::string EncodeUT(std::string &ut, unsigned long long usize);
-
-	//bool RecvToWriter();
+	//从服务器接收文件块并存入文件中
 	bool _RecvToWriter();
 
+	//从文件读取文件块并发送给服务器
 	bool SendFromReader();
 
+	//计算文件传输速率，通知界面改变显示信息
 	#pragma region calculate speed and tell control
 	void StartCount();
 	bool IsOneSecond();
 	void Count(unsigned long long num);
 	void ClearCount();
 
-//	void SpeedChange(unsigned int speed);
 	void ProgressChange(float progress, unsigned int speed);
 	void CompleteChange();
 	#pragma endregion
@@ -66,42 +67,11 @@ public:
 	bool InitFile(const char* fileName, unsigned long long size);
 	bool InitFile();
 
-	void SetUsername(std::string &username) {
-		this->username = username;
+	bool IsComplete() {
+		return isComplete;
 	}
 
-	void SetPassword(std::string &pw) {
-		password = pw;
-	}
-
-	std::string &GetPassword() {
-		return password;
-	}
-
-	virtual std::string &GetLocalPath() = 0;
-
-	void SetTokenOne(std::string &token) {
-		token_one = token;
-	}
-
-	void SetManager(MyMissionManager* manager);
-
-	unsigned long long GetFileSize() {
-		return file->GetSize();
-	}
-
-	unsigned long long GetCurrentSize() {
-		return currentSize;
-	}
-
-	void SetFileSize(unsigned long long size) {
-		file->SetSize(size);
-	}
-
-	void IncCurrentSize(unsigned long long add) {
-		currentSize += add;
-	}
-
+	#pragma region Get
 	float GetProcess() {
 		if (file == 0) {
 			return 0.0f;
@@ -112,13 +82,59 @@ public:
 		return (float)currentSize / (float)file->GetSize();
 	}
 
-	void SetFileID(std::string &id) {
-		fID = id;
+	std::string &GetPassword() {
+		return password;
+	}
+
+	virtual std::string GetLocalPath() = 0;
+
+	unsigned long long GetFileSize() {
+		return file->GetSize();
+	}
+
+	unsigned long long GetCurrentSize() {
+		return currentSize;
 	}
 
 	std::string &GetFileID() {
 		return fID;
 	}
+	#pragma endregion
+
+	#pragma region Set
+	void SetUsername(std::string &username) {
+		this->username = username;
+	}
+
+	void SetPassword(std::string &pw) {
+		password = pw;
+	}
+
+	void SetComplete(bool c) {
+		isComplete = c;
+	}
+
+	void SetTokenOne(std::string &token) {
+		token_one = token;
+	}
+
+	void SetManager(MyMissionManager* manager);
+
+	void SetFileSize(unsigned long long size) {
+		file->SetSize(size);
+	}
+
+	void IncCurrentSize(unsigned long long add) {
+		currentSize += add;
+	}
+
+	void SetFileID(std::string &id) {
+		fID = id;
+	}
+	#pragma endregion
+
+	//验证过程与被动监听线程类似，不做赘述
+	std::string EncodeUT(std::string &ut, unsigned long long usize);
 
 	virtual std::string GetCertificationInfo();
 
@@ -128,11 +144,10 @@ public:
 		return currentSize == file->GetSize();
 	}
 
+	//暂不支持保存与重启线程
 	void SaveProcess();
 
 	void LoadProcess();
-
-	void OutputSituation();
 
 	virtual bool Cancel();
 
@@ -142,4 +157,3 @@ public:
 };
 
 #endif // !MYMISSION_H_
-

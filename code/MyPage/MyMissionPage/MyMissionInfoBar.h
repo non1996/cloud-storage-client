@@ -7,6 +7,10 @@
 #include <QPushButton>
 #include <QHBoxLayout>
 
+//---------------------------------------------
+//	任务信息框
+//	显示任务名字，任务下载速度，任务下载进度
+//---------------------------------------------
 class MyMissionInfoBar : public QWidget
 {
     Q_OBJECT

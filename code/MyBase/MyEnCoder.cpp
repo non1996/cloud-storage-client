@@ -14,6 +14,14 @@ MyEnCoder::~MyEnCoder()
 	Cleaner::Delete<MyCodeImp*>(&coder);
 }
 
+std::string MyEnCoder::MD5(std::string & text)
+{
+	std::string digest;
+	Weak1::MD5 md5;
+	StringSource(text, true, new HashFilter(md5, new HexEncoder(new StringSink(digest))));
+	return digest;
+}
+
 std::string MyEnCoder::PrivateFileMD5(std::string & fileName)
 {
 	std::string connectMD5;
@@ -41,6 +49,14 @@ std::string MyEnCoder::PrivateFileMD5(std::string & fileName)
 	transform(connectMD5.begin(), connectMD5.end(), connectMD5.begin(), ::tolower);
 	delete[] buf;
 	return MyEnCoder::MD5(connectMD5);
+}
+
+std::string MyEnCoder::FileMD5(std::string & fileName)
+{
+	Weak1::MD5 md5;
+	std::string digest;
+	FileSource(fileName.c_str(), true, new HashFilter(md5, new HexEncoder(new StringSink(digest))));
+	return digest;
 }
 
 MyEnCoder * MyEnCoder::Instance()

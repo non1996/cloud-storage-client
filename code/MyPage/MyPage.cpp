@@ -91,13 +91,14 @@ void MyPage::ConnectSlot()
 
     connect(lpFileBrowser, SIGNAL(Upload(QString)), this, SLOT(sendUploadSignal(QString)));
     connect(lpFileBrowser, SIGNAL(Download(QString)), this, SLOT(sendDownloadSignal(QString)));
-    connect(lpFileBrowser, SIGNAL(Share(QString)), this, SLOT(sendShareSignal(QString)));
+    connect(lpFileBrowser, SIGNAL(Share(QString, QString)), this, SLOT(sendShareSignal(QString, QString)));
     connect(lpFileBrowser, SIGNAL(Delete(QString)), this, SLOT(sendDeleteSignal(QString)));
     connect(lpFileBrowser, SIGNAL(NewDir(QString)), this, SLOT(sendNewDirSignal(QString)));
 
     connect(lpFileBrowser, SIGNAL(Back()), this, SLOT(sendBackSignal()));
     connect(lpFileBrowser, SIGNAL(Front()), this, SLOT(sendFrontSignal()));
     connect(lpFileBrowser, SIGNAL(Refresh()), this, SLOT(sendRefreshSignal()));
+	connect(lpFileBrowser, SIGNAL(Home()), this, SLOT(sendHomeSignal()));
     connect(lpFileBrowser, SIGNAL(Search(QString)), this, SLOT(sendSearchSignal(QString)));
 
     connect(lpFileBrowser, SIGNAL(Open(QString)), this, SLOT(sendEnterDirSignal(QString)));
@@ -139,9 +140,9 @@ void MyPage::sendUploadSignal(QString name)
     emit Upload(name);
 }
 
-void MyPage::sendShareSignal(QString name)
+void MyPage::sendShareSignal(QString name, QString p)
 {
-    emit Share(name);
+    emit Share(name, p);
 }
 
 void MyPage::sendBackSignal()
@@ -157,6 +158,11 @@ void MyPage::sendFrontSignal()
 void MyPage::sendRefreshSignal()
 {
     emit Refresh();
+}
+
+void MyPage::sendHomeSignal()
+{
+	emit Home();
 }
 
 void MyPage::sendSearchSignal(QString name)

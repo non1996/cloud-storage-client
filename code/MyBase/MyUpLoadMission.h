@@ -4,6 +4,10 @@
 #define MYUPLOADMISSION_H_
 
 #include "MyMission.h"
+
+//--------------------------
+//	上传线程
+//--------------------------
 class MyUpLoadMission :
 	public MyMission
 {
@@ -24,8 +28,7 @@ private:
 	unsigned long long uID;
 	char *sendBuf;
 
-	bool SendTouchCommand();	//create a new file in server
-
+	//向服务器发送命令申请上传
 	bool SendCommand();
 
 	ResponceType RecvResponse();
@@ -49,7 +52,7 @@ public:
 		netPath = np;
 	}
 
-	std::string &GetLocalPath() {
+	std::string GetLocalPath() {
 		return localPath;
 	}
 

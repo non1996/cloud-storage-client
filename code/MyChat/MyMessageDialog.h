@@ -10,6 +10,9 @@
 #include <QListWidget>
 #include <QPushButton>
 
+//-------------------------------------------
+//	简易对话框类
+//-------------------------------------------
 class MyMessageDialog : public QDialog
 {
     Q_OBJECT
@@ -18,11 +21,11 @@ public:
 private:
     void SetStyle();
 private:
-    QListWidget* lpMessage;
-    QLabel* lpCID;
-    QLineEdit* lpCIDEdit;
-    QTextEdit* lpTextEdit;
-//    QGridLayout* lpMainLayout;
+    QListWidget* lpMessage;			//消息框
+    QLabel* lpCID;					
+    QLineEdit* lpCIDEdit;			//用户昵称输入框
+    QTextEdit* lpTextEdit;			//输入框
+	QLabel* lpHint;
     QVBoxLayout* lpMainLayout;
 
     QPushButton* lpHide;

@@ -35,7 +35,7 @@ bool MyControl::InitSendRecvThread()
 {
 	sendRecv = MySendRecvThread::Instance();
 	bool r = false;
-	r = sendRecv->Init(SERVER_IP, SERVER_PORT);
+	r = sendRecv->Init(serverIP.c_str(), serverPort);
 	if (r == false) {
 		Cleaner::Release<MySendRecvThread*>(&sendRecv);
 		return false;
@@ -71,7 +71,7 @@ bool MyControl::InitMessageSocket(std::string & token, std::string & username)
 	recv->SetUsername(username);
 	recv->SetTokenOne(token);
 	bool r = false;
-	r = recv->Init(SERVER_IP, SERVER_PORT);
+	r = recv->Init(serverIP.c_str(), serverPort);
 	if (r == false) {
 		Cleaner::Release<MyRecvThread*>(&recv);
 		return false;
@@ -123,6 +123,9 @@ bool MyControl::Init() {
 	netFileManager = MyNetFileManager::Instance();
 	user = MyUserInfo::Instance();
 
+	if (!ReadNetInfo()) {
+		return false;
+	}
 	if (!InitSendRecvThread()) {
 		return false;
 	}
@@ -142,6 +145,19 @@ void MyControl::SetMainWindowReferance(MyMainWindow *m)
 	mainWindow = m;
 }
 
+bool MyControl::ReadNetInfo()
+{
+	std::ifstream fin("init.txt");
+	if (!fin.is_open()) {
+		return false;
+	}
+	std::getline(fin, serverIP, '\n');
+	std::string port;
+	std::getline(fin, port, '\n');
+	serverPort = std::stoi(port);
+	return true;
+}
+
 bool MyControl::NewMissionD(std::string & uID, std::string & token_one, std::string & username, std::string & password)
 {
 	MyDownLoadMission* temp = 0;
@@ -149,7 +165,7 @@ bool MyControl::NewMissionD(std::string & uID, std::string & token_one, std::str
 	if (temp == 0) {
 		return false;
 	}
-	if (temp->InitSocket(SERVER_IP, SERVER_PORT) == false) {
+	if (temp->InitSocket(serverIP.c_str(), serverPort) == false) {
 		Cleaner::Release<MyDownLoadMission*>(&temp);
 		return false;
 	}
@@ -169,7 +185,7 @@ bool MyControl::NewMissionU(std::string & fileName, unsigned long long uID, std:
 	if (temp == 0) {
 		return false;
 	}
-	if (!temp->InitSocket(SERVER_IP, SERVER_PORT)) {
+	if (!temp->InitSocket(serverIP.c_str(), serverPort)) {
 		Cleaner::Release<MyUpLoadMission*>(&temp);
 		return false;
 	}
@@ -181,7 +197,6 @@ bool MyControl::NewMissionU(std::string & fileName, unsigned long long uID, std:
 	temp->SetNetPath(netPath);
 	temp->SetManager(uploadManager);
 	uploadManager->NewMission(temp);
-//	mainWindow->AddUploadMission(fileName);
 	return true;
 }
 
@@ -222,9 +237,10 @@ bool MyControl::SetPath(std::string & s)
 
 bool MyControl::ReplaceContent(std::vector<std::string>& fileInfo)
 {
+	while (mainWindow == 0) {}
 	netFileManager->ReplaceContent(fileInfo);
 	mainWindow->CleanBrowser();
-	for (int i = 1; i < fileInfo.size(); ++i) {
+	for (unsigned int i = 1; i < fileInfo.size(); ++i) {
 		std::vector<std::string> temp;
 		bool share = false;
 		split::split(fileInfo[i], '+', temp);
@@ -253,7 +269,7 @@ bool MyControl::IsConnect()
 
 bool MyControl::IsLogIn()
 {
-	return user->IsLogIn();
+	return sendRecv->IsLogIn();
 }
 
 bool MyControl::LogIn(std::string & un, std::string & pw)
@@ -261,10 +277,22 @@ bool MyControl::LogIn(std::string & un, std::string & pw)
 	return user->LogIn(un, pw);
 }
 
-//void MyControl::showInfo(std::string content)
-//{
-//	mainWindow->showInfo(QString::fromStdString(content));
-//}
+void MyControl::ShowShareInfo(bool b)
+{
+	mainWindow->showShareInfo(b);
+}
+
+void MyControl::ResumeAllNotComplete()
+{
+	downloadManager->ResumeAll();
+	uploadManager->ResumeAll();
+}
+
+void MyControl::SetUserInfo(std::string &name, std::string &url, unsigned long long currentV, unsigned long long totalV)
+{
+	while (mainWindow == 0) {}
+	mainWindow->SetUserInfo(name, url, currentV, totalV);
+}
 
 std::string MyControl::GetPath(std::string & name)
 {
@@ -309,6 +337,14 @@ void MyControl::Complete(MyMissionManager* m, int i)
 	else if (m == uploadManager) {
 		mainWindow->UploadComplete(i);
 	}
+}
+
+void MyControl::Restart()
+{
+	sendRecv->ReInit();
+	sendRecv->_Close();
+	sendRecv->Start();
+	sendRecv->Resume();
 }
 
 void MyControl::CloseAllTransmit()

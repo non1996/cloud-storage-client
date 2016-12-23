@@ -18,11 +18,14 @@ void MyMenuBar::createWidget()
     lpMainWindowButton = new MyToolButton("image/menu/cloud.png", "myCloud", this);
     lpMainWindowButton->setMinimumSize(120, 116);
     lpMainWindowButton->SetPress(true);
-
     lpDownloadButton = new MyToolButton("image/menu/download.png", "download", this);
     lpDownloadButton->setMinimumSize(120, 116);
     lpUploadButton = new MyToolButton("image/menu/upload.png", "upload", this);
     lpUploadButton->setMinimumSize(120, 116);
+	
+	lpMainWindowButton->setToolTip("文件浏览页面");
+	lpDownloadButton->setToolTip("下载管理页面");
+	lpUploadButton->setToolTip("上传管理页面");
 }
 
 void MyMenuBar::createLayout()
@@ -52,6 +55,11 @@ void MyMenuBar::setSlotConnect()
             this, SLOT(ResponseSlot(MyToolButton*)));
     connect(lpUploadButton, SIGNAL(SignalParent(MyToolButton*)),
             this, SLOT(ResponseSlot(MyToolButton*)));
+}
+
+void MyMenuBar::SetUserInfo(QString name, QString url, unsigned long long cv, unsigned long long tv)
+{
+	lpUserInfo->SetInfo(name, url, cv, tv);
 }
 
 void MyMenuBar::ResponseSlot(MyToolButton *b)

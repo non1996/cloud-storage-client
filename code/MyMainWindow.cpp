@@ -1,5 +1,4 @@
 # pragma execution_character_set("utf-8")
-
 #include "MyMainWindow.h"
 #include "MyTitleBar.h"
 #include "MyFilePropertyHint.h"
@@ -10,6 +9,7 @@
 #include "MyBase/MyController.h"
 #include "MyChat/MyChatBar.h"
 #include "MyChat/MyMessageDialog.h"
+#include "MyLogInDialog.h"
 
 #include <QTimer>
 #include <QPainter>
@@ -25,14 +25,10 @@ MyMainWindow::MyMainWindow()
 {
     isMoving = false;
 
-    //控件
     InitWidget();
-    //布局
+
     InitLayout();
 
-    //------------------------------------
-    //  设置样式
-    //------------------------------------
     setThisStyle();
 
     InitSlot();
@@ -100,6 +96,14 @@ void MyMainWindow::sendSuccess(std::string c, std::string m)
 	emit ShowSendMessage(QString::fromStdString(c), QString::fromStdString(m));
 }
 
+void MyMainWindow::SetUserInfo(std::string & name, std::string & url, unsigned long long currentV, unsigned long long totalV)
+{
+	emit SetUserInfo(	QString::fromStdString(name),
+						QString::fromStdString(url),
+						currentV,
+						totalV);
+}
+
 void MyMainWindow::paintEvent(QPaintEvent *event)
 {
     QBitmap bitmap(size());
@@ -112,7 +116,7 @@ void MyMainWindow::paintEvent(QPaintEvent *event)
 }
 
 void MyMainWindow::mousePressEvent(QMouseEvent *e){
-    if(e->y() <= 22){
+    if(e->y() <= 22 && e->x() <= 850){
         isMoving = true;
         last = e->globalPos();
     }
@@ -167,16 +171,19 @@ void MyMainWindow::InitSlot()
 	connect(lpTitleBar, SIGNAL(CloseWindow()), this, SLOT(CleanAndClose()));
 
     connect(lpMenuBar, SIGNAL(SwitchPage(int)), lpPage, SLOT(SetCurrentPage(int)));
+	connect(this, SIGNAL(SetUserInfo(QString, QString, unsigned long long, unsigned long long)),
+			lpMenuBar, SLOT(SetUserInfo(QString, QString, unsigned long long, unsigned long long)));
 
     connect(lpPage, SIGNAL(Download(QString)), this, SLOT(startDownloadMission(QString)));
     connect(lpPage, SIGNAL(Upload(QString)), this, SLOT(startUploadMission(QString)));
-    connect(lpPage, SIGNAL(Share(QString)), this, SLOT(shareFile(QString)));
+    connect(lpPage, SIGNAL(Share(QString, QString)), this, SLOT(shareFile(QString, QString)));
     connect(lpPage, SIGNAL(Delete(QString)), this, SLOT(deleteFile(QString)));
     connect(lpPage, SIGNAL(NewDir(QString)), this, SLOT(makeNewDir(QString)));
 
     connect(lpPage, SIGNAL(Back()), this, SLOT(toUpperDir()));
     connect(lpPage, SIGNAL(Front()), this, SLOT(toBeforeDir()));
     connect(lpPage, SIGNAL(Refresh()), this, SLOT(refreshDir()));
+	connect(lpPage, SIGNAL(Home()), this, SLOT(backToHome()));
     connect(lpPage, SIGNAL(Search(QString)), this, SLOT(searchFile(QString)));
 
     connect(lpPage, SIGNAL(EnterDir(QString)), this, SLOT(enterDir(QString)));
@@ -195,15 +202,17 @@ void MyMainWindow::InitSlot()
     connect(lpPage, SIGNAL(CancelU(int)), this, SLOT(cancelU(int)));
     connect(lpPage, SIGNAL(OpenDirU(int)), this, SLOT(openDirU(int)));
 
-	//change back
+	connect(this, SIGNAL(ShareInfo(bool)), this, SLOT(ShowShare(bool)));
+
+	//改变页面
 	connect(this, SIGNAL(SetUploadProgress_signal(int, float, unsigned int)), lpPage, SLOT(SetUploadProgress(int, float, unsigned int)));
 	connect(this, SIGNAL(SetDownloadProgress_signal(int, float, unsigned int)), lpPage, SLOT(SetDownloadProgress(int, float, unsigned int)));
 	connect(this, SIGNAL(UploadComplete_signal(int)), lpPage, SLOT(UploadComplete(int)));
 	connect(this, SIGNAL(DownloadComplete_signal(int)), lpPage, SLOT(DownloadComplete(int)));
 
-	//chat
+	//聊天框信号槽
 	connect(lpChatBar, SIGNAL(ShowChat()), this, SLOT(showChatDialog()));
-	connect(lpChat, SIGNAL(send(QString, QString)), this, SLOT(send(QString, QString)));
+	connect(lpChat, SIGNAL(SendMessage(QString, QString)), this, SLOT(send(QString, QString)));
 	connect(this, SIGNAL(ShowSendMessage(QString, QString)), lpChat, SLOT(AddSendMessage(QString, QString)));
 	connect(this, SIGNAL(ShowMessage(QString, QString)), lpChat, SLOT(AddRecvMessage(QString, QString)));
 }
@@ -219,9 +228,20 @@ void MyMainWindow::setThisStyle()
     setWindowFlags(Qt::FramelessWindowHint);
 }
 
-void MyMainWindow::showInfo(QString s)
+void MyMainWindow::showNetBrokenInfo() 
 {
-	lpError->SetHint(s);
+	lpError->NetBroken();
+	lpError->show();
+	QTimer::singleShot(2000, lpError, SLOT(hide()));
+}
+
+void MyMainWindow::showShareInfo(bool ok)
+{
+	emit ShareInfo(ok);
+}
+
+void MyMainWindow::showInfo()
+{
 	lpError->show();
 	QTimer::singleShot(2000, lpError, SLOT(hide()));
 }
@@ -234,7 +254,7 @@ void MyMainWindow::startDownloadMission(QString name)
 		return;
 	}
 	if (!c->GetControl()->IsConnect()) {
-		showInfo("网络断开");
+		showNetBrokenInfo();
 	}
 	else{
 		c->PushGetCommand(uID);
@@ -246,18 +266,17 @@ void MyMainWindow::startUploadMission(QString name)
 	int pos = name.lastIndexOf('/');
 	QString fileName = name.mid(pos + 1, name.length() - pos);
 	QString filePath = name.mid(0, pos + 1);
-	showInfo(filePath);
 
 	MyController* c = MyController::Instance();
 	if (!c->GetControl()->IsConnect()) {
-		showInfo("网络断开");
+		showNetBrokenInfo();
 	}
 	else {
 		c->PushPutCommand(fileName.toStdString(), filePath.toStdString(), c->GetControl()->GetManager()->GetCurrentDir());
 	}
 }
 
-void MyMainWindow::shareFile(QString name)
+void MyMainWindow::shareFile(QString name, QString pass)
 {
 	MyController* c = MyController::Instance();
 	std::string uID;
@@ -266,10 +285,10 @@ void MyMainWindow::shareFile(QString name)
 	}
 
 	if (!c->GetControl()->IsConnect()) {
-		showInfo("网络断开");
+		showNetBrokenInfo();
 	}
 	else {
-		c->PushShareCommand(uID, std::string("0"));
+		c->PushShareCommand(uID, std::string("0"), pass.toStdString());
 	}
 }
 
@@ -282,7 +301,7 @@ void MyMainWindow::deleteFile(QString name)
 	}
 
 	if (!c->GetControl()->IsConnect()) {
-		showInfo("网络断开");
+		showNetBrokenInfo();
 	}
 	else {
 		c->PushDeleteCommand(uID, name.toStdString());
@@ -294,7 +313,7 @@ void MyMainWindow::makeNewDir(QString name)
 	MyController* c = MyController::Instance();
 
 	if (!c->GetControl()->IsConnect()) {
-		showInfo("网络断开");
+		showNetBrokenInfo();
 	}
 	else {
 		c->PushMkdirCommand(name.toStdString(), c->GetControl()->GetManager()->GetCurrentDir());
@@ -308,7 +327,7 @@ void MyMainWindow::toUpperDir()
 		return;
 	}
 	if (!c->GetControl()->IsConnect()) {
-		showInfo("网络断开");
+		showNetBrokenInfo();
 	}
 	else {
 		c->GetControl()->GetManager()->SaveCurrentPath();
@@ -323,7 +342,7 @@ void MyMainWindow::toBeforeDir()
 {
 	MyController* c = MyController::Instance();
 	if (!c->GetControl()->IsConnect()) {
-		showInfo("网络断开");
+		showNetBrokenInfo();
 	}
 	else {
 		if (c->GetControl()->GetManager()->hasPreDir()) {
@@ -339,7 +358,7 @@ void MyMainWindow::refreshDir()
 {
 	MyController* c = MyController::Instance();
 	if (!c->GetControl()->IsConnect()) {
-		showInfo("网络断开");
+		showNetBrokenInfo();
 	}
 	else {
 		c->PushLsCommand(	std::string("0"),
@@ -356,7 +375,7 @@ void MyMainWindow::searchFile(QString name)
 	argv.push_back(name.toStdString());
 	
 	if (!c->GetControl()->IsConnect()) {
-		showInfo("网络断开");
+		showNetBrokenInfo();
 	}
 	else {
 		c->GetControl()->GetManager()->SaveCurrentPath();
@@ -367,13 +386,38 @@ void MyMainWindow::searchFile(QString name)
 	}
 }
 
-void MyMainWindow::enterDir(QString name)
+void MyMainWindow::backToHome()
 {
 	MyController* c = MyController::Instance();
 	c->GetControl()->GetManager()->SaveCurrentPath();
 
 	if (!c->GetControl()->IsConnect()) {
-		showInfo("网络断开");
+		showNetBrokenInfo();
+	}
+	else {
+		c->PushLsCommand(std::string("0"),
+			std::string(""),
+			std::string("/"),
+			std::vector<std::string>());
+	}
+}
+
+void MyMainWindow::enterDir(QString name)
+{
+	MyController* c = MyController::Instance();
+	c->GetControl()->GetManager()->SaveCurrentPath();
+
+	std::ofstream fout("fault.txt", std::ios_base::app);
+	fout << c->GetControl()->IsConnect() << std::endl;
+	fout.flush();
+	fout.close();
+
+	if (!c->GetControl()->IsLogIn() || !c->GetControl()->IsConnect()) {
+		c->GetControl()->Restart();
+		MyLogInDialog* dialog = new MyLogInDialog(this);
+		if (dialog->exec() != QDialog::Accepted) {
+			CleanAndClose();
+		}
 	}
 	else {
 		if (name.split('.').size() == 1) {
@@ -397,7 +441,7 @@ void MyMainWindow::renameFile(QString oldn, QString newn)
 		return;
 	}
 	if (!c->GetControl()->IsConnect()) {
-		showInfo("网络断开");
+		showNetBrokenInfo();
 	}
 	else {
 		c->PushRenameCommand(uID,
@@ -442,20 +486,20 @@ void MyMainWindow::paste()
 	MyController* c = MyController::Instance();
 
 	if (!c->GetControl()->GetManager()->HasCopyFile()) {
-		lpError->SetHint("no copy file");
+		lpError->ExistHint();
 		lpError->show();
 		QTimer::singleShot(2000, lpError, SLOT(hide()));
 		return;
 	}
 	if (c->GetControl()->GetManager()->Exist()) {
-		lpError->SetHint("same name file exist");
+		lpError->ExistHint();
 		lpError->show();
 		QTimer::singleShot(2000, lpError, SLOT(hide()));
 		return;
 	}
 
 	if (!c->GetControl()->IsConnect()) {
-		showInfo("网络断开");
+		showNetBrokenInfo();
 		return;
 	}
 	if (c->GetControl()->GetManager()->IsCopy()) {
@@ -472,6 +516,10 @@ void MyMainWindow::send(QString cID, QString content)
 {
 	MyController* c = MyController::Instance();
 	c->PushSendCommand(cID.toStdString(), content.toStdString());
+	std::ofstream fout("test1.txt", std::ios_base::ate);
+	fout << cID.toStdString() << std::endl << content.toStdString();
+	fout.flush();
+	fout.close();
 }
 
 void MyMainWindow::showFileInfo(QString & name, QString & path, QString & date, QString & size, QString & type)
@@ -540,4 +588,15 @@ void MyMainWindow::CleanAndClose()
 	c->Close();
 	c->Release();
 	close();
+}
+
+void MyMainWindow::ShowShare(bool ok)
+{
+	if (ok) {
+		lpError->ShareOK();
+	}
+	else {
+		lpError->ShareFalled();
+	}
+	showInfo();
 }

@@ -9,6 +9,9 @@
 #include <QVBoxLayout>
 #include <QMouseEvent>
 
+//------------------------------------------
+//	新建文件夹对话框
+//------------------------------------------
 class MyNewDirDialog : public QDialog
 {
     Q_OBJECT

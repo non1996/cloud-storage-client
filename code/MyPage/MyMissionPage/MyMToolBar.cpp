@@ -13,7 +13,7 @@ MyMToolBar::MyMToolBar(QWidget *parent) : QWidget(parent)
 
 void MyMToolBar::createWidget()
 {
-    lpTransmitSpeed = new QLabel("ËÙ¶È: 0B/s");
+    lpTransmitSpeed = new QLabel("");
     lpTransmitSpeed->setMinimumWidth(200);
     lpTransmitSpeed->setAlignment(Qt::AlignCenter);
 

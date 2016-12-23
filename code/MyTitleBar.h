@@ -7,6 +7,9 @@
 class QLabel;
 class QPushButton;
 
+//-------------------------------------
+//	标题栏类
+//-------------------------------------
 class MyTitleBar : public QWidget
 {
     Q_OBJECT
@@ -23,11 +26,11 @@ private:
 
     void setIcon(QPushButton* b, QString path);
 private:
-    QLabel *lpIconLabel;
-    QLabel *lpTitleLabel;
-    QPushButton *lpMinimizeButton;
-    QPushButton *lpMaximizeButton;
-    QPushButton *lpCloseButton;
+    QLabel *lpIconLabel;				//标志
+    QLabel *lpTitleLabel;				//程序名
+    QPushButton *lpMinimizeButton;		//最小化按钮
+    QPushButton *lpMaximizeButton;		//最大化按钮
+    QPushButton *lpCloseButton;			//关闭按钮
 
     QHBoxLayout *lpLayout;
 signals:

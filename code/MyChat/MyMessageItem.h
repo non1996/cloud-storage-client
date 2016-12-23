@@ -8,6 +8,9 @@
 #include <QHBoxLayout>
 #include <QMouseEvent>
 
+//--------------------------------------------
+//	对话类，每个对象代表一条对话信息
+//--------------------------------------------
 class MyMessageItem : public QWidget
 {
     Q_OBJECT
@@ -19,18 +22,15 @@ public:
 public:
     explicit MyMessageItem(int type, QString &cID, QString & msg, QWidget *parent = 0);
 
-//    void SetCID(QString &);
-
-//    void SetMessage(QString &);
 protected:
     void mousePressEvent(QMouseEvent *event);
 private:
     void SetStyle();
 
 private:
-    QLabel* lpMessage;
-    QLabel* lpUserCID;
-    QVBoxLayout* lpMainLayout;
+    QLabel* lpMessage;			//消息框
+    QLabel* lpUserCID;			//用户昵称
+    QVBoxLayout* lpMainLayout;	
     QAction* lpCopy;
 signals:
 

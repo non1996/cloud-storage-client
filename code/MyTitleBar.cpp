@@ -45,9 +45,9 @@ void MyTitleBar::createWidget(){
     lpMaximizeButton->setObjectName("maximizeButton");
     lpCloseButton->setObjectName("closeButton");
 
-    lpMinimizeButton->setToolTip("Minimize");
-    lpMaximizeButton->setToolTip("Maximize");
-    lpCloseButton->setToolTip("Close");
+    lpMinimizeButton->setToolTip("最小化");
+    lpMaximizeButton->setToolTip("最大化");
+    lpCloseButton->setToolTip("关闭");
 }
 
 void MyTitleBar::createLayout()

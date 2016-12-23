@@ -19,6 +19,7 @@ void MyFBToolBar::setSlotConnect()
     connect(lpShare, SIGNAL(clicked(bool)), this, SLOT(clickedShare()));
     connect(lpDelete, SIGNAL(clicked(bool)), this, SLOT(clickedDelete()));
     connect(lpNewDir, SIGNAL(clicked(bool)), this, SLOT(clickedNewDir()));
+	connect(lpFork, SIGNAL(clicked(bool)), this, SLOT(clickedFork()));
 }
 
 void MyFBToolBar::createWidget()
@@ -28,12 +29,14 @@ void MyFBToolBar::createWidget()
     lpShare = new QPushButton("·ÖÏí", this);
     lpDelete = new QPushButton("É¾³ý", this);
     lpNewDir = new QPushButton("ÐÂ½¨", this);
+	lpFork = new QPushButton("Fork", this);
 
     lpUpload->setFixedSize(100, 40);
     lpDownload->setFixedSize(100, 40);
     lpShare->setFixedSize(100, 40);
     lpDelete->setFixedSize(100, 40);
     lpNewDir->setFixedSize(100, 40);
+	lpFork->setFixedSize(100, 40);
 }
 
 void MyFBToolBar::createLayout()
@@ -46,6 +49,7 @@ void MyFBToolBar::createLayout()
     lpLayout->addWidget(lpUpload);
     lpLayout->addWidget(lpDownload);
     lpLayout->addWidget(lpShare);
+	lpLayout->addWidget(lpFork);
     lpLayout->addWidget(lpDelete);
     lpLayout->addWidget(lpNewDir);
     lpLayout->addStretch();
@@ -68,7 +72,7 @@ void MyFBToolBar::setButtonStyle()
 	setIcon(lpShare, "image/fileBrowser/toolbar/share.png");
 	setIcon(lpDelete, "image/fileBrowser/toolbar/delete.png");
 	setIcon(lpNewDir, "image/fileBrowser/toolbar/new.png");
-
+	setIcon(lpFork, "image/fileBrowser/toolbar/fork.png");
     setStyleSheet( "QPushButton{background-color: rgb(64, 64, 64);"
                    "color: rgb(217, 217, 217);"
                    "border-style: outset;"
@@ -98,6 +102,11 @@ void MyFBToolBar::clickedDelete(){
 
 void MyFBToolBar::clickedNewDir(){
     emit NewDir();
+}
+
+void MyFBToolBar::clickedFork()
+{
+	emit Fork();
 }
 
 void MyFBToolBar::setIcon(QPushButton* b, QString path)

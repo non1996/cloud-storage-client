@@ -6,6 +6,9 @@
 #include <QMouseEvent>
 #include <QPushButton>
 
+//------------------------------------
+//	文件属性对话框
+//------------------------------------
 class MyFilePropertyHint :
 	public QDialog
 {

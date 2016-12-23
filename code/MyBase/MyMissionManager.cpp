@@ -49,18 +49,28 @@ void MyMissionManager::CompleteChange(MyMission *m)
 	MyControl::Instance()->Complete(this, result - missionList.begin());
 }
 
-bool MyMissionManager::Resume(int pos)
+bool MyMissionManager::Resume(unsigned int pos)
 {
-	if (pos < 0 || pos >= missionList.size()) {
+	if (pos >= missionList.size()) {
 		return false;
 	}
-
 	return missionList.at(pos)->Resume();
 }
 
-bool MyMissionManager::Suspend(int pos)
+bool MyMissionManager::ResumeAll()
 {
-	if (pos < 0 || pos >= missionList.size()) {
+	for (unsigned int i = 0; i < missionList.size(); ++i) {
+		if (missionList.at(i)->IsComplete()) {
+			missionList.at(i)->Start();
+			missionList.at(i)->Resume();
+		}
+	}
+	return true;
+}
+
+bool MyMissionManager::Suspend(unsigned int pos)
+{
+	if (pos >= missionList.size()) {
 		return false;
 	}
 	missionList.at(pos)->Suspend();
@@ -69,28 +79,28 @@ bool MyMissionManager::Suspend(int pos)
 
 bool MyMissionManager::Suspend(std::vector<int> &poss)
 {
-	for (int i = 0; i < poss.size(); ++i) {
-		if (poss.at(i) < 0 || poss.at(i) > missionList.size()) {
+	for (unsigned int i = 0; i < poss.size(); ++i) {
+		if (poss.at(i) < 0 || (unsigned int)poss.at(i) > missionList.size()) {
 			return false;
 		}
 	}
 	
-	for (int i = 0; i < poss.size(); ++i) {
+	for (unsigned int i = 0; i < poss.size(); ++i) {
 		missionList.at(poss[i])->Suspend();
 	}
 	return true;
 }
 
 bool MyMissionManager::SuspendAll() {
-	for (int i = 0; i < missionList.size(); ++i) {
+	for (unsigned int i = 0; i < missionList.size(); ++i) {
 		missionList.at(i)->Suspend();
 	}
 	return true;
 }
 
-bool MyMissionManager::Cancel(int pos)
+bool MyMissionManager::Cancel(unsigned int pos)
 {
-	if (pos < 0 || pos >= missionList.size()){
+	if (pos >= missionList.size()){
 		return false;
 	}
 
@@ -107,7 +117,7 @@ bool MyMissionManager::Cancel(int pos)
 bool MyMissionManager::CancelAll()
 {
 	MyMission* temp = 0;
-	for (int i = 0; i < missionList.size(); ++i) {
+	for (unsigned int i = 0; i < missionList.size(); ++i) {
 		temp = missionList.at(i);
 		temp->Close();
 		temp->Cancel();
@@ -120,7 +130,7 @@ bool MyMissionManager::CancelAll()
 
 void MyMissionManager::CloseAllThread()
 {
-	for (int i = 0; i < missionList.size(); ++i) {
+	for (unsigned int i = 0; i < missionList.size(); ++i) {
 		if (!missionList[i]->IsFinish()) {
 			missionList[i]->Close();
 		}
@@ -129,7 +139,7 @@ void MyMissionManager::CloseAllThread()
 
 void MyMissionManager::Release()
 {
-	for (int i = 0; i < missionList.size(); ++i) {
+	for (unsigned int i = 0; i < missionList.size(); ++i) {
 		missionList.at(i)->Release();
 		Cleaner::Delete<MyMission*>(&(missionList.at(i)));
 	}

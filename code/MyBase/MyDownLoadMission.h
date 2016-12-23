@@ -4,6 +4,10 @@
 #define MYDOWNLOADMISSION_H_
 
 #include "MyMission.h"
+
+//--------------------------
+//	œ¬‘ÿœﬂ≥Ã
+//--------------------------
 class MyDownLoadMission :
 	public MyMission
 {
@@ -17,7 +21,7 @@ private:
 	bool RecvFileName(std::string &name);
 
 	bool RecvFileType(std::string &type);
-	virtual std::string &GetLocalPath() {
+	virtual std::string GetLocalPath() {
 		return downloadPath;
 	}
 public:

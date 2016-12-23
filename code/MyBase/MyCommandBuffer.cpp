@@ -19,7 +19,7 @@ MyCommandBuffer::MyCommandBuffer(){
 
 
 MyCommandBuffer::~MyCommandBuffer(){
-/*	while (!recvQueue.empty()) {
+	while (!recvQueue.empty()) {
 		MyCommand* temp = recvQueue.front();
 		Cleaner::Delete<MyCommand*>(&temp);
 		recvQueue.pop();
@@ -28,7 +28,7 @@ MyCommandBuffer::~MyCommandBuffer(){
 		MyCommand* temp = sendQueue.front();
 		Cleaner::Delete<MyCommand*>(&temp);
 		sendQueue.pop();
-	}*/
+	}
 	Cleaner::Delete<MyMutex*>(&recvMutex);
 	Cleaner::Delete<MyMutex*>(&sendMutex);
 	Cleaner::Delete<MySemaphore*>(&recvEmpty);
@@ -86,15 +86,6 @@ void MyCommandBuffer::PutRecv(MyCommand* c){
 
 bool MyCommandBuffer::GetSendCommand(MyCommand ** cmd)
 {
-/*	if (IsSendQueEmpty()) {
-		return false;
-	}
-	if (!TestAndLockS()) {
-		return false;
-	}	
-	GetSend(cmd);
-	UnlockSend();
-	return true;*/
 	sendFull->Wait();
 	sendMutex->Wait();
 	GetSend(cmd);
@@ -105,13 +96,6 @@ bool MyCommandBuffer::GetSendCommand(MyCommand ** cmd)
 
 bool MyCommandBuffer::PutSendCommand(MyCommand * cmd)
 {
-/*	if (!TestAndLockS()) {
-		return false;
-	}
-	PutSend(cmd);
-	UnlockSend();
-	return true;*/
-
 	sendEmpty->Wait();
 	sendMutex->Wait();
 	PutSend(cmd);
@@ -122,16 +106,6 @@ bool MyCommandBuffer::PutSendCommand(MyCommand * cmd)
 
 bool MyCommandBuffer::GetRecvCommand(MyCommand ** cmd)
 {
-/*	if (IsRecvQueEmpty()) {
-		return false;
-	}
-	if (!TestAndLockR()) {
-		return false;
-	}
-	GetRecv(cmd);
-	UnlockRecv();
-	return true;*/
-
 	recvFull->Wait();
 	recvMutex->Wait();
 	GetRecv(cmd);
@@ -142,13 +116,6 @@ bool MyCommandBuffer::GetRecvCommand(MyCommand ** cmd)
 
 bool MyCommandBuffer::PutRecvCommand(MyCommand * cmd)
 {
-/*	if (!TestAndLockR()) {
-		return false;
-	}
-	PutRecv(cmd);
-	UnlockRecv();
-	return true;*/
-
 	recvEmpty->Wait();
 	recvMutex->Wait();
 	PutRecv(cmd);

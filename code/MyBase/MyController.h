@@ -8,7 +8,7 @@
 #include "MyCommandBuffer.h"
 
 //-------------------------------------------
-//	控制类，接收用户命令，并将命令放到发送缓冲
+//	控制类，将用户的鼠标操作翻译成命令，并将命令放入发送队列
 //	(实在不知道起什么名)
 //	管理别的模块的初始化和资源释放
 //-------------------------------------------
@@ -39,6 +39,7 @@ public:
 		return true;
 	}
 
+	//保存一个主窗口的引用
 	void SetMainWindowReferance(MyMainWindow*);
 
 	MyControl* GetControl() {
@@ -49,6 +50,8 @@ public:
 		return buffer;
 	}
 
+	//生成命令，并放入发送队列
+	#pragma region put command to send queue
 	//发送下载文件请求
 	void PushGetCommand(std::string &uId) {
 		buffer->PutRecvCommand(MyCommandBuilder::MakeGetCommand(uId));
@@ -58,7 +61,7 @@ public:
 	void PushPutCommand(std::string name, std::string localPath, std::string netPath) {
 		buffer->PutSendCommand(MyCommandBuilder::MakePutCommand(name, localPath, netPath));
 	}
-	
+
 	//发送删除文件请求
 	void PushDeleteCommand(std::string &uId, std::string &name) {
 		buffer->PutSendCommand(MyCommandBuilder::MakeDeleteCommand(uId, name));
@@ -100,8 +103,8 @@ public:
 	}
 
 	//共享文件
-	void PushShareCommand(std::string &uId, std::string &priv) {
-		buffer->PutSendCommand(MyCommandBuilder::MakeShareCommand(uId, priv));
+	void PushShareCommand(std::string &uId, std::string &priv, std::string &pass) {
+		buffer->PutSendCommand(MyCommandBuilder::MakeShareCommand(uId, priv, pass));
 	}
 
 	void PushLogInCommand(std::string &un, std::string &pw) {
@@ -111,7 +114,8 @@ public:
 	void PushSendCommand(std::string &cID, std::string &content) {
 		buffer->PutSendCommand(MyCommandBuilder::MakeSendCommand(cID, content));
 	}
-
+	#pragma endregion
+	
 	void Close();
 
 	static MyController* Instance();

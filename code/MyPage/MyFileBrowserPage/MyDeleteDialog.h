@@ -6,7 +6,9 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-
+//------------------------------------------
+//	删除文件确认框
+//------------------------------------------
 class MyDeleteDialog : public QDialog
 {
     Q_OBJECT

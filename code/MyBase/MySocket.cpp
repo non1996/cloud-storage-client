@@ -7,10 +7,13 @@ bool MySocket::ReceiveUntil(unsigned int until)
 {
 	int len;
 	for (;;) {
-		if (currentContentSize >= until) {	//当接收到足够数量的数据时告知可以读取
+		//当接收到足够数量的数据时返回，之后调用Read读出数据
+		if (currentContentSize >= until) {	
 			break;
 		}
-		if (extraBuf == 0) {	//判断是否有外加接收缓冲
+
+		//判断是否有外加接收缓冲
+		if (extraBuf == 0) {	
 			//在buffer中已有的内容后面接收
 			len = recv(client, recvBuf + currentContentSize, MAX_BUF - currentContentSize, 0);
 		}
@@ -35,7 +38,10 @@ MySocket::MySocket()
 
 MySocket::~MySocket()
 {
-	delete[] extraBuf;
+	if (extraBuf) {
+		delete[] extraBuf;
+		extraBuf = 0;
+	}
 }
 
 bool MySocket::init(const char* ipAddr, int port)
@@ -56,7 +62,7 @@ void MySocket::SetExtraBuf(char * e, unsigned int size)
 	exSize = size;
 }
 
-int MySocket::connect_to_srv()
+int MySocket::ConnectSrv()
 {
 	return connect(client, (SOCKADDR*)&addrSrv, sizeof(SOCKADDR));
 }
@@ -128,15 +134,19 @@ bool MySocket::Read(std::string &recvr, unsigned int len)
 
 bool MySocket::SendBytes(std::string toSend, const char * key)
 {
-	unsigned long long totalLength = toSend.size();
-	unsigned long long alrSend = 0;		//已经发送的数据长度
 	std::string str_plength, str_tlength;
 	std::string encode;
 
+	//先发送要发送的数据的总长度，以大端序发送
 	if (false == Send(MyEnCoder::UllToBytes((unsigned long long)toSend.size()).c_str(), 8)) {
 		return false;
 	}
 
+	//以下述格式发送数据，前8个字节为明文长度，第二个8字节为数据包总长度（即密文长度+16）
+	//后边为密文
+	//------------------------------------------
+	//	 8 bytes  |  8 bytes  |  encoded data  |
+	//------------------------------------------
 	str_plength = MyEnCoder::UllToBytes((unsigned long long)toSend.size());
 	encode = MyEnCoder::Instance()->Encode(toSend.c_str(), key, toSend.size());
 	str_tlength = MyEnCoder::UllToBytes((unsigned long long)(encode.size() + 16));
@@ -146,30 +156,30 @@ bool MySocket::SendBytes(std::string toSend, const char * key)
 	if (false == Send(temp.c_str(), temp.size())) {
 		return false;
 	}
-
-	//先发送要传输数据的总长度
 	return true;
 }
 
 bool MySocket::RecvBytes(std::string & toRecv, const char * key)
 {
-	std::string str_totalLength;
-	unsigned long long totalLength = 0;
-	unsigned long long plength = 0;
-	unsigned long long elength = 0;
-	std::string plainText;
+	std::string str_totalLength;			//长度的大端序字符串
+	unsigned long long totalLength = 0;		//需要接收的总长度
+	unsigned long long plength = 0;			//每个数据块明文长度
+	unsigned long long elength = 0;			//每个数据块密文长度
+	std::string plainText;					//明文块
 
+	//先接收8个字节的数据包的总明文长度
 	if (false == ReceiveUntil(8)) {
 		return false;
 	}
-	//获取要接收的明文的总长度
 	Read(str_totalLength, 8);
 	totalLength = MyEnCoder::BytesToUll(str_totalLength);
 	
+	//循环接收直到收到该包全部被接收
 	for (;;) {
 		if (totalLength == 0) {
 			return true;
 		}
+		//对于每个数据块，先接收16个字节的长度信息，具体格式见SendBytes函数
 		if (false == ReceiveUntil(16)) {
 			return false;
 		}
@@ -188,6 +198,7 @@ bool MySocket::RecvBytes(std::string & toRecv, const char * key)
 		//解密
 		plainText = MyEnCoder::Instance()->Decode(code.c_str(), key, elength);
 		totalLength -= plength;
+		//将明文拼起来
 		toRecv += plainText;
 	}
 	return true;

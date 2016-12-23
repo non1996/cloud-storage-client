@@ -6,15 +6,18 @@
 #include "Cleaner.h"
 #include <string>
 
+//-------------------------------------------------------
+//	网盘文件基类，保存网盘文件的基本信息
+//-------------------------------------------------------
 class MyNetFileBase
 {
 private:
-	std::string uId;
-	std::string name;
-	std::string path;
-	std::string date;
-	unsigned long long size;
-	bool shared;
+	std::string uId;			//文件在服务器上的编号
+	std::string name;			//文件名
+	std::string path;			//文件所在的网盘路径
+	std::string date;			//文件的创建日期
+	unsigned long long size;	//文件大小（文件夹大小均为0）
+	bool shared;				//文件是否共享
 public:
 	MyNetFileBase();
 	MyNetFileBase(std::string &name, std::string &path, std::string &date, unsigned long long size);
@@ -72,6 +75,9 @@ public:
 	virtual MyNetFileBase* Copy() = 0;
 };
 
+//----------------------------------------------------
+//	网盘文件类
+//----------------------------------------------------
 class MyNetFileNorm 
 	:public MyNetFileBase{
 private:
@@ -94,9 +100,11 @@ public:
 	virtual MyNetFileBase* Copy() {
 		return new MyNetFileNorm(*this);
 	}
-//	virtual std::string toString();
 };
 
+//----------------------------------------------------
+//	网盘文件夹类
+//----------------------------------------------------
 class MyNetFileDir
 	:public MyNetFileBase{
 private:
@@ -119,7 +127,6 @@ public:
 	virtual MyNetFileBase* Copy() {
 		return new MyNetFileDir(*this);
 	}
-//	virtual std::string toString();
 };
 #endif // !MYNETFILEBASE_H_
 

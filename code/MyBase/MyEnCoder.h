@@ -1,7 +1,6 @@
 #pragma once
 
 #define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
-
 #include "Cleaner.h"
 #include <string>
 #include <aes.h>
@@ -13,24 +12,28 @@
 using namespace CryptoPP;
 
 //--------------------------
-//	implementor
+//	声明加解密器的接口，子类通过实现接口来得到使用不同加密算法的加密器
 //--------------------------
 class MyCodeImp {
 public:
-	//the first param is the block you want to encode(decode)
-	//the seconde param is the key
-	//the third param is the size of block
 	virtual const char* GetKey() = 0;
+	//第一个参数是需要加密或解密的字符串，第二个参数是秘钥，第三个参数是字符串长度
 	virtual std::string Encode(const char*, const char*, unsigned int = 0) = 0;
 	virtual std::string Decode(const char*, const char*, unsigned int = 0) = 0;
 };
 
+
+//-----------------------------------------
+//	AES CFB模式加解密器，实现了加解密器的接口，并定义它的具体实现
+//-----------------------------------------
 class MyCFBImp : public MyCodeImp {
 private:
 	char key[AES::DEFAULT_KEYLENGTH * 2 + 1];
+
+	//AES加密需要使用的秘钥向量
 	byte iv[AES::BLOCKSIZE] = { 0x00, 0x01, 0x02, 0x03, 0x04,
-		0x05, 0x06, 0x07, 0x08, 0x09,
-		0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
+								0x05, 0x06, 0x07, 0x08, 0x09,
+								0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
 public:
 	MyCFBImp() {
 		memset(key, 0, sizeof(key));
@@ -69,11 +72,14 @@ public:
 	}
 };
 
+//--------------------------------------------------------
+//	加解密器的抽象，维护一个加解密器的实现使得可以在程序运行时改变加解密算法
+//--------------------------------------------------------
 class MyEnCoder
 {
 private:
-	//use to encode and decode message or file block
-	static MyEnCoder* instance;
+	//整个程序只有一个加密器，因此使用单例模式
+	static MyEnCoder* instance;	
 
 	MyCodeImp* coder;
 public:
@@ -100,6 +106,7 @@ public:
 		return coder->Decode(input, key, size);
 	}
 
+	//int64变量和8字节的大端序字符串相互转换
 	#pragma region Exchange Int64 to bytes (upper bound)
 	static std::string UllToBytes(unsigned long long num) {
 		static char out[8];
@@ -135,23 +142,14 @@ public:
 
 	#pragma endregion
 
+	//提供MD5算法
 	#pragma region Md5
-	static std::string MD5(std::string &text) {
-		std::string digest;
-		Weak1::MD5 md5;
-		StringSource(text, true, new HashFilter(md5, new HexEncoder(new StringSink(digest))));
-		return digest;
-	}
+	static std::string MD5(std::string &text);
 
-	//协议自定文件MD5计算方法
+	//协议自定的文件MD5计算方法
 	static std::string PrivateFileMD5(std::string &fileName);
 
-	static std::string FileMD5(std::string &fileName) {
-		Weak1::MD5 md5;
-		std::string digest;
-		FileSource(fileName.c_str(), true, new HashFilter(md5, new HexEncoder(new StringSink(digest))));
-		return digest;
-	}
+	static std::string FileMD5(std::string &fileName);
 	#pragma endregion
 
 	static MyEnCoder* Instance();

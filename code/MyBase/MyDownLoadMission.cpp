@@ -5,6 +5,7 @@ std::string MyDownLoadMission::downloadPath = "myDownload\\";
 
 bool MyDownLoadMission::SendCommand()
 {
+
 	std::string cmd;
 	cmd += "get+"
 		+ GetFileID() + "+"
@@ -62,21 +63,23 @@ MyDownLoadMission::~MyDownLoadMission()
 
 void MyDownLoadMission::Execute()
 {
-	//	connect to server
+	//	调用父类的函数与服务器连接及验证
+	MyMission::Execute();
+	
+	//自定义socket类默认发送缓冲区大小为4K字节，为提速而扩展到4M
 	GetSocket()->SetExtraBuf(new char[4096 * 1024 + 1], 4096 * 1024);
 
-	MyMission::Execute();
-
+	//向服务器发送命令申请获取文件
 	if (false == SendCommand()) {
 		GetSocket()->disconnect();
 		return;
 	}
 	int num = 0;
-	if (false == RecvFileNum(num)) {		//获取文件数量(包括文件夹数目)
+	//获取要下载的文件数量
+	if (false == RecvFileNum(num)) {		
 		GetSocket()->disconnect();
 		return;
 	}
-
 	if (!InitFile()) {
 		return;
 	}
@@ -92,29 +95,32 @@ void MyDownLoadMission::Execute()
 		//获得类型
 		if (false == GetSocket()->RecvBytes(t_type, GetToken().c_str())) {	//8个字节
 			GetSocket()->disconnect();
-			break;
+			return;
 		}
 		type = MyEnCoder::BytesToUll(t_type);
-		if (type == 1) {				//如果是文件夹，则创建并进入下一个循环
-			if (true == MyFile::MakeDir((downloadPath + name).c_str())) {
-			}
+		//如果是文件夹，则创建文件夹并进入下一个循环
+		if (type == 1) {				
+			MyFile::MakeDir((downloadPath + name).c_str());
 			continue;
 		}
-		else if(type == 0){			//, 如果是文件，则接收
+		//如果是文件，则接收
+		else if(type == 0){			
 			GetFile()->SetName((downloadPath + name).c_str());
-			MyFile::CreateEmptyFile((downloadPath + name).c_str(), 0);	//创建一个空文件
+			//创建一个空文件
+			MyFile::CreateEmptyFile((downloadPath + name).c_str(), 0);	
 			GetFile()->OpenWrite();
 			if (false == _RecvToWriter()) {
-			}
-			else {
+				return;
 			}
 			GetFile()->Close();
 		}
 		else {
+			return;
 		}
 	}
 	CompleteChange();
 	Sleep(1000);
+	SetComplete(true);
 	SetFinish();
 	GetSocket()->disconnect();
 	GetFile()->Close();

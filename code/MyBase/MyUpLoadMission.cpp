@@ -3,27 +3,6 @@
 #include "MyCommand.h"
 #include <sstream>
 
-bool MyUpLoadMission::SendTouchCommand()
-{
-	MyTouchCommand temp(fileName, netPath);
-	std::string resp;
-	if (false == GetSocket()->SendBytes(temp.ToString(), GetToken().c_str())) {
-		return false;
-	}
-	if (false == GetSocket()->RecvBytes(resp, GetToken().c_str())) {
-		return false;
-	}
-	if (resp != "200") {
-		return false;
-	}
-	if (false == GetSocket()->RecvBytes(resp, GetToken().c_str())) {
-		return false;
-	}
-	temp.GetServerResponse(resp.c_str(), resp.size());
-	uID = temp.GetUID();
-	return true;
-}
-
 bool MyUpLoadMission::SendCommand()
 {
 	std::string cmd;
@@ -34,14 +13,13 @@ bool MyUpLoadMission::SendCommand()
 	MyFile::Size((localPath + fileName).c_str(), size);
 	ss_size << size;
 	ss_uID << uID;
-//	std::cout << localPath << fileName << ss_size.str() << std::endl;
 
 	fileMD5 = MyEnCoder::PrivateFileMD5((localPath + fileName));
 	if (fileMD5.size() == 0) {
 		return false;
 	}
-//	std::cout << "file md5 is:" << fileMD5 << std::endl;
-	cmd += "put+"					//PUT <SEP> UID <SEP> MD5
+	//发送格式 [PUT][+][UID][+][MD5]
+	cmd += "put+"					
 		+ ss_uID.str() + "+"
 		+ ss_size.str() + "+"
 		+ fileMD5;
@@ -103,11 +81,12 @@ void MyUpLoadMission::Execute()
 		return;
 	}
 	ResponceType r = RecvResponse();
+	//服务器允许传输且服务器上不存在相同文件，则开始传输
 	if (r == ResponceType::START) {
 		if (false == InitFile((localPath + fileName).c_str(), 0)) {
-
+			return;
 		}else if (false == GetFile()->OpenRead()) {
-
+			return;
 		}else if (false == SendFromReader()) {
 
 		}else {
@@ -115,11 +94,17 @@ void MyUpLoadMission::Execute()
 			GetSocket()->RecvBytes(res, GetToken().c_str());
 		}
 		SetFinish();
+		CompleteChange();
+		SetComplete(true);
 		GetSocket()->disconnect();
 		GetFile()->Close();
 		return;
-	}else if (r == ResponceType::SUCCESS) {
+	}
+	//如果服务器上已有该文件，则秒传成功
+	else if (r == ResponceType::SUCCESS) {
+		SetFinish();
 		CompleteChange();
+		SetComplete(true);
 		GetSocket()->disconnect();
 		return;
 	}else {

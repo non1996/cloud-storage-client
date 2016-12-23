@@ -7,6 +7,9 @@
 #include <QVBoxLayout>
 #include <QListWidget>
 
+//------------------------------------------------
+//	文件浏览器类
+//------------------------------------------------
 class MyFileBrowser : public QWidget
 {
     Q_OBJECT
@@ -17,7 +20,7 @@ public:
     bool HasFileFocus();
     QString GetSeletedFileName();
     QString GetCopyFileName();
-    bool IsCopy();//复制返回true，剪切返回0
+    bool IsCopy();
 	bool CleanBrowser();
 	void RenameFile(QString&, QString&);
 	void DeleteNetFile(QString &);
@@ -48,7 +51,6 @@ signals:
 public slots:
     void AddDirector(QString&);
 	void AddFile(QString &);
-//	void DeleteFile();
 
 private slots:
     void enterDir(QListWidgetItem*);

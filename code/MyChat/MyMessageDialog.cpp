@@ -1,3 +1,4 @@
+# pragma execution_character_set("utf-8")
 #include "MyMessageDialog.h"
 #include "MyMessageItem.h"
 #include "MyChatBar.h"
@@ -6,11 +7,12 @@ MyMessageDialog::MyMessageDialog(QWidget *parent)
     :QDialog(parent)
 {
     lpMessage = new QListWidget(this);
-    lpCID = new QLabel("CID", this);
+    lpCID = new QLabel("êÇ³Æ", this);
     lpTextEdit = new QTextEdit(this);
     lpCIDEdit = new QLineEdit(this);
     lpHide = new QPushButton(this);
     lpOk = new QPushButton("send", this);
+	lpHint = new QLabel(this);
 
 	QPixmap *pixmap = new QPixmap(22, 22);
 	pixmap->load("image/chat/min.png");
@@ -19,11 +21,12 @@ MyMessageDialog::MyMessageDialog(QWidget *parent)
 	lpHide->setIconSize(QSize(22, 22));
 
     lpCID->setMinimumSize(50, 20);
-    lpCIDEdit->setMinimumSize(50, 20);
+    lpCIDEdit->setMinimumSize(50, 40);
     lpTextEdit->setMinimumSize(300, 80);
-    lpMessage->setMinimumSize(300, 400);
+    lpMessage->setMinimumSize(300, 380);
     lpOk->setMinimumSize(50, 30);
     lpHide->setMinimumSize(30, 30);
+	lpHint->setMinimumSize(250, 30);
     setMinimumSize(330, 600);
     setWindowFlags(Qt::FramelessWindowHint);
 
@@ -39,6 +42,7 @@ MyMessageDialog::MyMessageDialog(QWidget *parent)
     lpSub1->addWidget(lpCIDEdit);
     lpSub1->addStretch();
 
+	lpSub2->addWidget(lpHint);
     lpSub2->addStretch();
     lpSub2->addWidget(lpOk);
 
@@ -83,13 +87,12 @@ void MyMessageDialog::SetStyle()
                     "border-color: rgb(45, 45, 45)}"
                     "QWidget{color: rgb(217, 217, 217);"
                     "font: bold 14px;}");
-
 }
 
 void MyMessageDialog::AddRecvMessage(QString cID, QString message)
 {
     QListWidgetItem* temp = new QListWidgetItem(lpMessage);
-    MyMessageItem* item = new MyMessageItem(MyMessageItem::RECV, cID, message, this);
+    MyMessageItem* item = new MyMessageItem(MyMessageItem::RECV, QString("from:" + cID), message, this);
     lpMessage->addItem(temp);
     lpMessage->setItemWidget(temp, item);
     temp->setSizeHint(QSize(item->rect().width(), item->rect().height()));
@@ -98,8 +101,12 @@ void MyMessageDialog::AddRecvMessage(QString cID, QString message)
 
 void MyMessageDialog::AddSendMessage(QString cID, QString message)
 {
+	if (message == "error") {
+		lpHint->setText("´íÎóµÄêÇ³Æ");
+		return;
+	}
     QListWidgetItem* temp = new QListWidgetItem(lpMessage);
-    MyMessageItem* item = new MyMessageItem(MyMessageItem::SEND, cID, message, this);
+    MyMessageItem* item = new MyMessageItem(MyMessageItem::SEND, QString("to:" + cID), message, this);
     lpMessage->addItem(temp);
     lpMessage->setItemWidget(temp, item);
     temp->setSizeHint(QSize(item->rect().width(), item->rect().height()));
@@ -109,8 +116,12 @@ void MyMessageDialog::AddSendMessage(QString cID, QString message)
 
 void MyMessageDialog::send()
 {
-    if (lpCIDEdit->text().size() == 0 || lpTextEdit->toPlainText().size() == 0){
+    if (lpCIDEdit->text().size() == 0){
+		lpHint->setText("ÇëÊäÈëÓÃ»§êÇ³Æ");
         return ;
     }
+	if (lpTextEdit->toPlainText().size() == 0) {
+		lpHint->setText("ÊäÈë¿ò²»ÄÜÎª¿Õ");
+	}
     emit SendMessage(lpCIDEdit->text(), lpTextEdit->toPlainText());
 }

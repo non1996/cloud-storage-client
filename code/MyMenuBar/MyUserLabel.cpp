@@ -1,6 +1,12 @@
 # pragma execution_character_set("utf-8")
 #include "MyUserLabel.h"
-
+/*
+#include <QUrl>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QEventLoop>
+*/
 MyUserLabel::MyUserLabel(QWidget *parent) : QWidget(parent)
 {
     InitWidget();
@@ -8,18 +14,31 @@ MyUserLabel::MyUserLabel(QWidget *parent) : QWidget(parent)
     SetWidgetStyle();
 }
 
+void MyUserLabel::SetInfo(QString name, QString url, unsigned long long cv, unsigned long long tv)
+{
+	lpUsername->setText(name);
+	lpNetCapacity->setRange(0, (int)tv);
+	lpNetCapacity->setValue((int)cv);
+	QPixmap* pixmap = new QPixmap(100, 100);
+	pixmap->load(url);
+	QPixmap scaledPixmap = pixmap->scaled(QSize(80, 80), Qt::KeepAspectRatio);
+	lpUserProfilePic->setPixmap(scaledPixmap);
+
+	lpVInfo->setText(GetV(cv) + " / " + GetV(tv));
+}
+
 void MyUserLabel::InitWidget(){
     lpUserProfilePic = new QLabel(this);
 	lpUserProfilePic->setScaledContents(true);
     QPixmap* pixmap = new QPixmap(100, 100);
-    pixmap->load("image/menu/test.png");
+    pixmap->load("temp/default.jpg");
 	QPixmap scaledPixmap = pixmap->scaled(QSize(80, 80), Qt::KeepAspectRatio);
 
     lpUserProfilePic->setPixmap(scaledPixmap);
 
     lpUsername = new QLabel(this);
     lpUsername->setText("non1996");
-
+	lpVInfo = new QLabel("0GB/0GB", this);
     lpNetCapacity = new QProgressBar(this);
     lpNetCapacity->setRange(0, 100);
     lpNetCapacity->setValue(20);
@@ -30,8 +49,9 @@ void MyUserLabel::InitLayout(){
     lpVLayout = new QVBoxLayout(this);
 
     lpVLayout->addWidget(lpUsername);
-    lpVLayout->addWidget(lpNetCapacity);
-
+	lpVLayout->addWidget(lpVInfo);
+	lpVLayout->addWidget(lpNetCapacity);
+	
     lpHLayout->addWidget(lpUserProfilePic);
     lpHLayout->addLayout(lpVLayout);
 
@@ -40,11 +60,13 @@ void MyUserLabel::InitLayout(){
 
 void MyUserLabel::SetWidgetStyle(){
     lpUserProfilePic->setMinimumSize(100, 100);
-    lpUserProfilePic->setScaledContents(true);
 	lpUserProfilePic->setStyleSheet("QLabel{border: 3px;"
 									"background-color:rgb(100, 100, 100);"
 									"border-radius: 10px;"
 									"border-color: rgb(60, 60, 60)}");
+	lpVInfo->setMinimumSize(100, 20);
+	lpVInfo->setStyleSheet("QLabel{color: rgb(217, 217, 217);font: bold 14px;}");
+	lpVInfo->setAlignment(Qt::AlignCenter);
 
     lpUsername->setMinimumSize(100, 20);
     lpNetCapacity->setFixedSize(200, 20);
@@ -65,3 +87,38 @@ void MyUserLabel::SetWidgetStyle(){
                                  "border-bottom-right-radius: 5px;"
                                  "background-color:rgb(80, 80, 80);}");
 }
+QString MyUserLabel::GetV(unsigned long long v)
+{
+	if (v < 1024) {
+		return QString("%1B").arg(v);
+	}
+	else if (v < 1048576) {
+		return QString("%1KB").arg(v / 1024);
+	}
+	else if (v < 1073741824) {
+		return QString("%1MB").arg(v / 1048576);
+	}
+	else if (v < 1099511627776) {
+		return QString("%1GB").arg(v / 1073741824);
+	}
+	else {
+		return QString("%1TB").arg(v / 1099511627776);
+	}
+}
+/*
+void MyUserLabel::GetNetworkPic(QString & u)
+{
+	QUrl url(u);
+	QNetworkAccessManager manager;
+	QEventLoop loop;
+
+	QNetworkReply *reply = manager.get(QNetworkRequest(url));
+	QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+	loop.exec();
+
+	QByteArray jpegData = reply->readAll();
+	QPixmap pixmap;
+	pixmap.loadFromData(jpegData);
+	lpUserProfilePic->setPixmap(pixmap);
+}
+*/

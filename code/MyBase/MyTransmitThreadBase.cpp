@@ -22,6 +22,7 @@ MySocket * MyTransmitThreadBase::GetSocket()
 
 bool MyTransmitThreadBase::Init(const char * ipAddr, int port)
 {
+	Cleaner::Delete<MySocket*>(&sock);
 	sock = new MySocket();
 
 	if (sock == 0) {
@@ -46,7 +47,7 @@ bool MyTransmitThreadBase::ReInit()
 		return false;
 	}
 //	if (!sock->init(ServerIp.c_str(), ServerPort)) {
-	if (!sock->init("10.201.14.164", ServerPort)) {
+	if (!sock->init(ServerIp.c_str(), ServerPort)) {
 		return false;
 	}
 	SetInit(true);
@@ -66,18 +67,12 @@ bool MyTransmitThreadBase::GetTokenFromServer()
 
 bool MyTransmitThreadBase::Connect()
 {
-	std::ofstream fout("test1.txt", std::ios_base::app);
-	fout << ServerIp << std::endl;
-	fout << ServerPort << std::endl;
-	
-	while (0 > sock->connect_to_srv()) {
+	while (0 > sock->ConnectSrv()) {
 		Sleep(1000);
 		if (IsFinish() == true) {
 			return false;
 		}
-		fout << "connecting\n";
 	}
-	fout.close();
 	SetConnect(true);
 	return true;
 }

@@ -26,14 +26,15 @@ bool MyMission::_RecvToWriter()
 	if (file == 0) {
 		return false;
 	}
-	unsigned long long totalLength = 0;
-	unsigned long long recvLength = 0;
-	unsigned long long plength = 0;
-	unsigned long long elength = 0;
-	unsigned long long actualWrite = 0;
+	unsigned long long totalLength = 0;	//文件大小
+	unsigned long long recvLength = 0;	//已经收到的大小
+	unsigned long long plength = 0;		//文件块明文长度
+	unsigned long long elength = 0;		//文件块密文长度
+	unsigned long long actualWrite = 0;	//实际写入文件的长度
 	std::string strTotalLen;
 	std::string fileBlock;
 
+	//首先接收该文件的大小，格式为大端序的8个字节
 	if (false == GetSocket()->ReceiveUntil(8)) {
 		return false;
 	}
@@ -46,6 +47,9 @@ bool MyMission::_RecvToWriter()
 		if (recvLength == totalLength) {
 			return true;
 		}
+		//对于每个文件块，首先接收16个字节的长度信息
+		//前8个字节表示文件块明文长度
+		//后8个字节表示文件块密文长度
 		if (false == GetSocket()->ReceiveUntil(16)) {
 			return false;
 		}
@@ -61,11 +65,13 @@ bool MyMission::_RecvToWriter()
 		}
 		GetSocket()->Read(code, elength);
 		fileBlock = MyEnCoder::Instance()->Decode(code.c_str(), GetToken().c_str(), elength);
+		//将文件块从偏移处写入文件
 		if (false == GetFile()->Write(fileBlock.c_str(), fileBlock.size(), actualWrite, recvLength)) {
 
 		}
 		recvLength += plength;
 
+		//计速，每秒通知界面改变一次
 		Count(plength);
 		if (IsOneSecond()) {
 			ProgressChange((float)recvLength / totalLength, bytesPerSecond);
@@ -81,6 +87,7 @@ bool MyMission::SendFromReader()
 	if (file == 0) {
 		return false;
 	}
+	//首先发送文件大小
 	std::string len = MyEnCoder::UllToBytes(file->GetSize());
 	if (false == GetSocket()->Send(len.c_str(), 8)) {
 		return false;
@@ -101,18 +108,22 @@ bool MyMission::SendFromReader()
 
 	for (;;) {
 		std::string sizeCode, sizeRead;
+		//当剩余发送长度减为0时退出
 		if (sendLength <= 0) {
 			delete[] sendBuf;
 			CompleteChange();
 			return true;
 		}
+
+		//控制发送速率，每次发送长度不超过发送缓冲的1/3。
 		if (sendLength >= encodeBufLen) {
 			file->Read(sendBuf, encodeBufLen, actualLength, alrSend);
 		}
 		else {
 			file->Read(sendBuf, sendLength, actualLength, alrSend);
 		}
-
+		
+		//将文件块加密，以格式  ||明文长度 | 包长度 | 密文||  发送
 		sendCode = MyEnCoder::Instance()->Encode(sendBuf, GetToken().c_str(), actualLength);
 		sizeCode = MyEnCoder::UllToBytes(sendCode.size() + 16);
 		sizeRead = MyEnCoder::UllToBytes(actualLength);
@@ -181,6 +192,7 @@ MyMission::MyMission()
 	file = 0;
 	currentSize = 0;
 	manager = 0;
+	isComplete = false;
 }
 
 
@@ -213,9 +225,9 @@ bool MyMission::InitFile()
 	return true;
 }
 
-std::string & MyMission::GetLocalPath()
+std::string MyMission::GetLocalPath()
 {
-	return std::string("");
+	return "";
 }
 
 void MyMission::SetManager(MyMissionManager* m)
@@ -247,13 +259,6 @@ void MyMission::LoadProcess()
 	std::cout << "load process method has not implement\n";
 }
 
-void MyMission::OutputSituation()
-{
-	std::cout	<< file->GetName() << "\t"
-				<< file->GetSize() << "\t"
-				<< GetProcess() << std::endl;
-}
-
 bool MyMission::Cancel()
 {
 	return true;
@@ -266,15 +271,18 @@ void MyMission::Execute()
 	}
 	while (!IsFinish()) {
 		if (!Connect()) {
-			Sleep(10000);
+			DisConnect();
+			ReInit();
 			continue;
 		}
 		if (!GetTokenFromServer()) {
-			Sleep(10000);
+			DisConnect();
+			ReInit();
 			continue;
 		}
 		if (!Certification()) {
-			Sleep(10000);
+			DisConnect();
+			ReInit();
 			continue;
 		}
 		else {

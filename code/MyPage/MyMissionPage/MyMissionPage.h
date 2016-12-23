@@ -9,6 +9,9 @@
 class MyMToolBar;
 class MyMissionInfoBar;
 
+//--------------------------------------------
+//	传输任务页面
+//--------------------------------------------
 class MyMissionPage : public QWidget
 {
     Q_OBJECT

@@ -6,6 +6,10 @@
 #include "MyTransmitThreadBase.h"
 #include "MyCommandBuffer.h"
 
+//------------------------------------------------
+//	被动接收线程
+//	接收从服务器发来的消息，同时作为保活连接
+//------------------------------------------------
 class MyRecvThread :
 	public MyTransmitThreadBase
 {
@@ -14,8 +18,8 @@ private:
 
 	MyCommandBuffer* buffer;
 
-	std::string token_one;
-	std::string username;
+	std::string token_one;				//主传输线程验证时用的秘钥
+	std::string username;				//用户名
 private:
 	MyRecvThread();
 
@@ -32,6 +36,7 @@ public:
 		token_one = token;
 	}
 
+	//用新收到的秘钥加密用户名和主线程验证的秘钥，用于该线程连接时的验证
 	std::string EncodeUT(std::string &ut, unsigned long long usize);
 
 	virtual std::string GetCertificationInfo();

@@ -6,6 +6,9 @@
 #include <QPainter>
 #include <QColor>
 
+//---------------------------------------------
+//	自定义按钮类，用于菜单栏
+//---------------------------------------------
 class MyToolButton : public QToolButton
 {
     Q_OBJECT
@@ -42,6 +45,7 @@ private:
     QString strInfo;
 
 signals:
+	//被按下时将自身传给上级控件，告诉上级控件是哪个按钮被按下
     void SignalParent(MyToolButton*);
 public slots:
     void SlotPressed();

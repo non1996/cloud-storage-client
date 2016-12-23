@@ -12,28 +12,30 @@
 #include "MyNetFileManager.h"
 #include "MyUserInfo.h"
 
-#define SERVER_IP "10.201.14.164"
+#define SERVER_IP "10.201.14.176"
 #define SERVER_PORT 10087
 
 //---------------------------------------------------
-//	命令执行线程
+//	控制线程
 //	从命令接收队列中获取命令并执行
 //---------------------------------------------------
-
 class MyMainWindow;
 class MyControl
 	:public MyThread
 {
 private:
+	std::string serverIP;
+	int serverPort;
+
+private:
 	static MyControl* instance;
 
 	MyCommandBuffer* buffer;
-//	MyNetWork* net;
 	
 	MyNetFileManager* netFileManager;
 	MyUserInfo* user;
 
-	//传输线程的引用
+	//传输线程
 	MySendRecvThread* sendRecv;
 	MyRecvThread* recv;
 	MyMissionManager* downloadManager;
@@ -41,7 +43,7 @@ private:
 
 	bool isFinish;
 
-	MyMainWindow* mainWindow;	//用于通知界面做出改变
+	MyMainWindow* mainWindow;	//listener模式，用于通知界面做出改变
 
 protected:
 	MyControl();
@@ -50,9 +52,15 @@ public:
 	
 	~MyControl();
 
+	bool IsConnect();
+
+	bool IsLogIn();
+
 	bool Init();
 
 	void SetMainWindowReferance(MyMainWindow*);
+
+	bool ReadNetInfo();
 
 	#pragma region Init
 	//主交互线程初始化和启动
@@ -69,6 +77,7 @@ public:
 	bool InitTransmitManager();
 	#pragma endregion
 
+	//管理上传下载任务，由于时间原因，协议没有商量好，暂时没有实现
 	#pragma region Interface for mission manager
 	int GetMissionNumD() {
 		return downloadManager->GetMissionNum();
@@ -128,6 +137,7 @@ public:
 
 	#pragma endregion
 
+	#pragma region Get
 	std::string &GetSendRecvToken() {
 		return sendRecv->GetToken();
 	}
@@ -151,23 +161,29 @@ public:
 	std::string &GetDownloadPath(int n) {
 		return downloadManager->GetPath(n);
 	}
+	#pragma endregion
 
+	//由命令类调用
+	#pragma region control
+	//在聊天框显示要发送的消息
 	void ShowAlreadySendMessage(std::string &, std::string &);
 
+	//在聊天框显示接收到的消息
 	void ShowReceiveMessage(std::string &, std::string &);
 
+	//重命名文件操作
 	void Rename(std::string &, std::string &);
 
+	//粘贴文件操作
 	void Paste();
 
+	//设置路径
 	bool SetPath(std::string &s);
 
+	//重置文件管理器
 	bool ReplaceContent(std::vector<std::string> &fileInfo);
 
-	bool IsConnect();
-
-	bool IsLogIn();
-
+	//保存用户名和密码
 	bool LogIn(std::string &un, std::string &pw);
 
 	void SetFinish() {
@@ -178,22 +194,36 @@ public:
 		return isFinish == true;
 	}
 
-//	void showInfo(std::string);	//test
+	void ShowShareInfo(bool b);
+
+	//重启所有未传输完成的线程
+	void ResumeAllNotComplete();
+
+	//设置显示在窗口上的用户名和用户头像以及用户网盘容量
+	void SetUserInfo(std::string &name, std::string &url, unsigned long long currentV, unsigned long long totalV);
 
 	std::string GetPath(std::string &name);
+	
 	bool AddNormFile(std::string &uId, std::string &path, std::string &name, std::string &date, unsigned long long size, bool shared);
+	
 	bool AddDirector(std::string &uId, std::string &path, std::string & name, std::string & date, unsigned long long size, bool shared);
+	
 	void DeleteNetFile(std::string &name);
+	#pragma endregion
 
+	//由上传或下载线程调用，通知界面改变
 	#pragma region listen
 	void GetProgress(MyMissionManager* m, int i, float pro, unsigned int speed);
 	void Complete(MyMissionManager* m, int i);
 
 	#pragma endregion
 
+	void Restart();
+
 	void CloseAllTransmit();
 
 	virtual void Execute();
+
 	static MyControl* Instance();
 
 	static void Release();

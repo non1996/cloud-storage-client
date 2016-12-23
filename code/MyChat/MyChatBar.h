@@ -6,6 +6,9 @@
 #include <QLabel>
 #include <QHBoxLayout>
 
+//------------------------------------------------
+//	聊天工具栏
+//------------------------------------------------
 class MyChatBar: public QWidget
 {
     Q_OBJECT
@@ -14,8 +17,8 @@ public:
     void SetText();
     void CleanText();
 private:
-    QPushButton* lpShowChat;
-    QLabel* lpInfo;
+    QPushButton* lpShowChat;			//打开或隐藏聊天输入框的按钮
+    QLabel* lpInfo;						//显示未看的消息数量
     QHBoxLayout* lpLayout;
 signals:
     void ShowChat();
