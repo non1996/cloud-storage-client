@@ -78,10 +78,17 @@ void MyUpLoadMission::Execute()
 	MyMission::Execute();
 
 	if (false == SendCommand()) {
+		
 		return;
 	}
 	ResponceType r = RecvResponse();
 	//服务器允许传输且服务器上不存在相同文件，则开始传输
+
+	std::ofstream fout("fileName.txt", std::ios_base::ate);
+	fout << localPath << std::endl;
+	fout << fileName << std::endl;
+	fout.flush();
+	fout.close();
 	if (r == ResponceType::START) {
 		if (false == InitFile((localPath + fileName).c_str(), 0)) {
 			return;

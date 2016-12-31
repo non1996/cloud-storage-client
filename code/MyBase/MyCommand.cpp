@@ -62,7 +62,10 @@ bool MyDeleteCommand::GetServerResponse(const char * info, int len)
 void MyForkCommand::Execute(MyControl *c)
 {
 	if (isOk) {
-
+		c->ShowForkInfo(true);
+	}
+	else {
+		c->ShowForkInfo(false);
 	}
 }
 
@@ -256,6 +259,9 @@ bool MySendCommand::GetServerResponse(const char * info, int len)
 	if (resNum == 200) {
 		isOk = true;
 	}
+	std::ofstream test("recv.txt", std::ios_base::ate);
+	test << resNum << len << std::endl;
+	test.close();
 	return true;
 }
 
@@ -291,4 +297,9 @@ void MySetInfoCommand::Execute(MyControl *c)
 std::string MySetInfoCommand::ToString()
 {
 	return std::string();
+}
+
+void MySetCapasityCommand::Execute(MyControl *c)
+{
+	c->SetCapasity(capasity);
 }

@@ -17,7 +17,7 @@ public:
     explicit MyUserLabel(QWidget *parent = 0);
 
 	void SetInfo(QString, QString, unsigned long long, unsigned long long);
-
+	void SetCapasity(unsigned long long c);
 private:
     void InitWidget();
 

@@ -8,13 +8,16 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QMouseEvent>
-/*
-class MyForkDialog
+
+class MyForkDialog: public QDialog
 {
 	Q_OBJECT
 public:
-	MyForkDialog();
-	~MyForkDialog();
+	MyForkDialog(QWidget* parent = 0);
+	~MyForkDialog() {}
+
+	QString GetID();
+	QString GetPass();
 
 protected:
 	void paintEvent(QPaintEvent* event);
@@ -35,8 +38,10 @@ private:
 	QPushButton* lpOK;
 	QPushButton* lpCancel;
 
-	QLineEdit* lpNameInput;
-	QLabel* lpHint;
+	QLineEdit* lpUIDInput;
+	QLineEdit* lpPassInput;
+	QLabel* lpHint1;
+	QLabel* lpHint2;
 	QLabel* lpFalse;
 
 	QVBoxLayout* lpMainLayout;
@@ -48,7 +53,6 @@ private:
 
 private slots:
 	void pressOk();
-
 };
-*/
+
 #endif // MYNEWDIRDIALOG_H

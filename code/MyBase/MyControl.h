@@ -196,6 +196,8 @@ public:
 
 	void ShowShareInfo(bool b);
 
+	void ShowForkInfo(bool b);
+
 	//重启所有未传输完成的线程
 	void ResumeAllNotComplete();
 
@@ -208,6 +210,7 @@ public:
 	
 	bool AddDirector(std::string &uId, std::string &path, std::string & name, std::string & date, unsigned long long size, bool shared);
 	
+	void SetCapasity(unsigned long long c);
 	void DeleteNetFile(std::string &name);
 	#pragma endregion
 

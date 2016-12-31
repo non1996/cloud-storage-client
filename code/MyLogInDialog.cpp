@@ -12,9 +12,9 @@ MyLogInDialog::MyLogInDialog(QWidget* parent)
 	lpHint = new QLabel(this);
 	lpHint->setMinimumHeight(10);
 
-    lpUsername = new QLineEdit("forec@bupt.edu.cn", this);
+    lpUsername = new QLineEdit("non1996@forec.cn", this);
     lpUsername->setPlaceholderText("输入用户名");
-    lpPassword = new QLineEdit("TESTTHISPASSWORD", this);
+    lpPassword = new QLineEdit("zenith", this);
     lpPassword->setPlaceholderText("输入密码");
 	lpPassword->setEchoMode(QLineEdit::Password);
 	lpUsername->setMinimumWidth(280);

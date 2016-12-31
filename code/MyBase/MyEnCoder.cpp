@@ -26,7 +26,9 @@ std::string MyEnCoder::PrivateFileMD5(std::string & fileName)
 {
 	std::string connectMD5;
 	Weak1::MD5 md5;
+	std::locale loc = std::locale::global(std::locale(""));
 	std::ifstream file(fileName.c_str(), std::ios_base::binary);
+	std::locale::global(loc);
 	if (!file.is_open()) {
 		return "";
 	}

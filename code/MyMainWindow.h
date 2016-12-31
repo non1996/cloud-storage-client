@@ -49,10 +49,13 @@ public:
 	
 	//设置用户信息显示
 	void SetUserInfo(std::string &name, std::string &url, unsigned long long currentV, unsigned long long totalV);
+	void SetCapasity(unsigned long long c);
+
 
 	//显示错误提示
 	void showNetBrokenInfo();
 	void showShareInfo(bool);
+	void showForkInfo(bool);
 	void showInfo();
 
 signals:
@@ -64,7 +67,9 @@ signals:
 	void ShowMessage(QString, QString);
 	void ShowSendMessage(QString, QString);
 	void SetUserInfo(QString, QString, unsigned long long, unsigned long long);
+	void SetC(unsigned long long);
 	void ShareInfo(bool);
+	void ForkInfo(bool);
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -124,9 +129,12 @@ private slots:
     void copy(QString);					
     void cut(QString);					
     void paste();						
-	void send(QString, QString);		
+	void send(QString, QString);	
+	void fork(QString, QString);
 	
 	void showFileInfo(QString &name, QString &path, QString &date, QString &size, QString &type);
+
+	void setCapasity(unsigned long long);
 
 	//尚未实现
     void suspendD(int);
@@ -143,6 +151,7 @@ private slots:
 
 	void CleanAndClose();
 	void ShowShare(bool);
+	void ShowFork(bool);
 };
 
 #endif // MYMAINWINDOW_H

@@ -116,14 +116,15 @@ private:
 	std::string fileName;
 	std::string localPath;
 	std::string netPath;
+//	std::string utf8n;
 	MyTouchCommand touch;
 
 public:
-	MyPutCommand(std::string name, std::string localPath, std::string netPath) {
+	MyPutCommand(std::string name, std::string localPath, std::string netPath, std::string utf8Name) {
 		fileName = name;
 		this->localPath = localPath;
 		this->netPath = netPath;
-		touch = MyTouchCommand(fileName, netPath);
+		touch = MyTouchCommand(utf8Name, netPath);
 		isOk = false;
 	}
 
@@ -435,7 +436,11 @@ public:
 	MyMessageCommand(){}
 	
 	virtual bool GetServerResponse(const char* info, int len) {
-		content = std::string(info, len);
+		std::string temp = std::string(info, len);
+		unsigned int firstPos = content.find_first_of('+');
+		unsigned int lastPos = content.find_last_of('+');
+		cID = temp.substr(0, firstPos);
+		content = temp.substr(firstPos + 1, lastPos - firstPos);
 		return true;
 	}
 
@@ -486,6 +491,23 @@ public:
 	virtual std::string ToString();
 };
 
+class MySetCapasityCommand : public MyCommand {
+private:
+	unsigned long long capasity;
+public:
+public:
+	MySetCapasityCommand(std::string &c) {
+		capasity = std::stoull(c);
+	}
+	virtual bool GetServerResponse(const char* info, int len) {
+		return true;
+	}
+
+	virtual void Execute(MyControl*);
+
+	virtual std::string ToString() { return ""; }
+};
+
 //-----------------------------------------------------------------
 //	命令构造器，其实有点多余
 //-----------------------------------------------------------------
@@ -495,8 +517,8 @@ public:
 		return new MyGetCommand(uId);
 	}
 
-	static MyPutCommand* MakePutCommand(std::string name, std::string localPath, std::string netPath) {
-		return new MyPutCommand(name, localPath, netPath);
+	static MyPutCommand* MakePutCommand(std::string name, std::string localPath, std::string netPath, std::string utf8Name) {
+		return new MyPutCommand(name, localPath, netPath, utf8Name);
 	}
 
 	static MyDeleteCommand* MakeDeleteCommand(std::string &uId, std::string &name) {

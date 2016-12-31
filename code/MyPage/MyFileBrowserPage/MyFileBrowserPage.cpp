@@ -5,6 +5,7 @@
 #include "MyFileBrowser.h"
 #include "MyNewDirDialog.h"
 #include "MyDeleteDialog.h"
+#include "MyForkDialog.h"
 #include <QFileDialog>
 #include <QDebug>
 
@@ -77,6 +78,7 @@ void MyFileBrowserPage::ConnectSlot()
     connect(lpToolBar, SIGNAL(Share()), this, SLOT(clickedShare()));
     connect(lpToolBar, SIGNAL(Delete()), this, SLOT(clickedDelete()));
     connect(lpToolBar, SIGNAL(NewDir()), this, SLOT(clickedAdd()));
+	connect(lpToolBar, SIGNAL(Fork()), this, SLOT(clickedFork()));
 
     connect(lpDirBar, SIGNAL(Back()), this, SLOT(clickedBack()));
     connect(lpDirBar, SIGNAL(Front()), this, SLOT(clickedFront()));
@@ -165,6 +167,14 @@ void MyFileBrowserPage::clickedAdd()
     if(lpDialog->exec() == QDialog::Accepted){
         emit NewDir(lpDialog->GetContent());
     }
+}
+
+void MyFileBrowserPage::clickedFork()
+{
+	MyForkDialog* fork = new MyForkDialog(this);
+	if (fork->exec() == QDialog::Accepted) {
+		emit Fork(fork->GetID(), fork->GetPass());
+	}
 }
 
 void MyFileBrowserPage::clickedBack()

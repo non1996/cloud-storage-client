@@ -58,8 +58,8 @@ public:
 	}
 
 	//发送上传文件请求
-	void PushPutCommand(std::string name, std::string localPath, std::string netPath) {
-		buffer->PutSendCommand(MyCommandBuilder::MakePutCommand(name, localPath, netPath));
+	void PushPutCommand(std::string name, std::string localPath, std::string netPath, std::string utf8Name) {
+		buffer->PutSendCommand(MyCommandBuilder::MakePutCommand(name, localPath, netPath, utf8Name));
 	}
 
 	//发送删除文件请求

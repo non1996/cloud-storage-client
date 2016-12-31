@@ -18,6 +18,7 @@ class MyMenuBar : public QWidget
 public:
     explicit MyMenuBar(QWidget *parent = 0);
 
+	void SetCapasity(unsigned long long);
 private:
     void createWidget();
     void createLayout();

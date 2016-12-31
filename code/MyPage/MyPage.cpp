@@ -94,6 +94,7 @@ void MyPage::ConnectSlot()
     connect(lpFileBrowser, SIGNAL(Share(QString, QString)), this, SLOT(sendShareSignal(QString, QString)));
     connect(lpFileBrowser, SIGNAL(Delete(QString)), this, SLOT(sendDeleteSignal(QString)));
     connect(lpFileBrowser, SIGNAL(NewDir(QString)), this, SLOT(sendNewDirSignal(QString)));
+	connect(lpFileBrowser, SIGNAL(Fork(QString, QString)), this, SLOT(sendForkSignal(QString, QString)));
 
     connect(lpFileBrowser, SIGNAL(Back()), this, SLOT(sendBackSignal()));
     connect(lpFileBrowser, SIGNAL(Front()), this, SLOT(sendFrontSignal()));
@@ -248,4 +249,9 @@ void MyPage::sendDeleteSignal(QString name)
 void MyPage::sendNewDirSignal(QString name)
 {
     emit NewDir(name);
+}
+
+void MyPage::sendForkSignal(QString id, QString pass)
+{
+	emit Fork(id, pass);
 }

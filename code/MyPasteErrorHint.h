@@ -16,6 +16,8 @@ public:
 	
 	void ShareOK();
 	void ShareFalled();
+	void ForkOK();
+	void ForkFailed();
 
 	void EmptyHint();
 	void ExistHint();

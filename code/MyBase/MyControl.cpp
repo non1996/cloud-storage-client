@@ -189,6 +189,11 @@ bool MyControl::NewMissionU(std::string & fileName, unsigned long long uID, std:
 		Cleaner::Release<MyUpLoadMission*>(&temp);
 		return false;
 	}
+	for (int i = 0; i < localPath.size(); ++i) {
+		if (localPath.at(i) == '/') {
+			localPath.at(i) = '\\';
+		}
+	}
 	temp->SetTokenOne(token_one);
 	temp->SetUsername(username);
 	temp->SetUID(uID);
@@ -197,6 +202,7 @@ bool MyControl::NewMissionU(std::string & fileName, unsigned long long uID, std:
 	temp->SetNetPath(netPath);
 	temp->SetManager(uploadManager);
 	uploadManager->NewMission(temp);
+	
 	return true;
 }
 
@@ -282,6 +288,11 @@ void MyControl::ShowShareInfo(bool b)
 	mainWindow->showShareInfo(b);
 }
 
+void MyControl::ShowForkInfo(bool b)
+{
+	mainWindow->showForkInfo(b);
+}
+
 void MyControl::ResumeAllNotComplete()
 {
 	downloadManager->ResumeAll();
@@ -311,6 +322,11 @@ bool MyControl::AddDirector(std::string & uId, std::string & path, std::string &
 	netFileManager->AddDirector(uId, path, name, date, size, shared);
 	mainWindow->AddFile(name);
 	return true;
+}
+
+void MyControl::SetCapasity(unsigned long long c)
+{
+	mainWindow->SetCapasity(c);
 }
 
 void MyControl::DeleteNetFile(std::string & name)

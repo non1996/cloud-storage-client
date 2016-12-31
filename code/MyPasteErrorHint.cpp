@@ -24,6 +24,16 @@ void MyPasteErrorHint::ShareFalled()
 	lpHint->setText("共享失败");
 }
 
+void MyPasteErrorHint::ForkOK()
+{
+	lpHint->setText("Fork成功，请刷新");
+}
+
+void MyPasteErrorHint::ForkFailed()
+{
+	lpHint->setText("Fork失败");
+}
+
 void MyPasteErrorHint::EmptyHint()
 {
 	lpHint->setText("粘贴板无文件");

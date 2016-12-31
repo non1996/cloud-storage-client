@@ -7,6 +7,7 @@
 int main(int argc, char *argv[]){
 	QApplication a(argc, argv);
 	MyController* controller = MyController::Instance();
+
 	if (!controller->Init()) {
 		return 0;
 	}

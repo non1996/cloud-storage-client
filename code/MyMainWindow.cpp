@@ -104,6 +104,11 @@ void MyMainWindow::SetUserInfo(std::string & name, std::string & url, unsigned l
 						totalV);
 }
 
+void MyMainWindow::SetCapasity(unsigned long long c)
+{
+	emit SetC(c);
+}
+
 void MyMainWindow::paintEvent(QPaintEvent *event)
 {
     QBitmap bitmap(size());
@@ -179,6 +184,7 @@ void MyMainWindow::InitSlot()
     connect(lpPage, SIGNAL(Share(QString, QString)), this, SLOT(shareFile(QString, QString)));
     connect(lpPage, SIGNAL(Delete(QString)), this, SLOT(deleteFile(QString)));
     connect(lpPage, SIGNAL(NewDir(QString)), this, SLOT(makeNewDir(QString)));
+	connect(lpPage, SIGNAL(Fork(QString, QString)), this, SLOT(fork(QString, QString)));
 
     connect(lpPage, SIGNAL(Back()), this, SLOT(toUpperDir()));
     connect(lpPage, SIGNAL(Front()), this, SLOT(toBeforeDir()));
@@ -203,12 +209,14 @@ void MyMainWindow::InitSlot()
     connect(lpPage, SIGNAL(OpenDirU(int)), this, SLOT(openDirU(int)));
 
 	connect(this, SIGNAL(ShareInfo(bool)), this, SLOT(ShowShare(bool)));
+	connect(this, SIGNAL(ForkInfo(bool)), this, SLOT(ShowFork(bool)));
 
 	//改变页面
 	connect(this, SIGNAL(SetUploadProgress_signal(int, float, unsigned int)), lpPage, SLOT(SetUploadProgress(int, float, unsigned int)));
 	connect(this, SIGNAL(SetDownloadProgress_signal(int, float, unsigned int)), lpPage, SLOT(SetDownloadProgress(int, float, unsigned int)));
 	connect(this, SIGNAL(UploadComplete_signal(int)), lpPage, SLOT(UploadComplete(int)));
 	connect(this, SIGNAL(DownloadComplete_signal(int)), lpPage, SLOT(DownloadComplete(int)));
+	connect(this, SIGNAL(SetC(unsigned long long)), this, SLOT(setCapasity(unsigned long long)));
 
 	//聊天框信号槽
 	connect(lpChatBar, SIGNAL(ShowChat()), this, SLOT(showChatDialog()));
@@ -238,6 +246,11 @@ void MyMainWindow::showNetBrokenInfo()
 void MyMainWindow::showShareInfo(bool ok)
 {
 	emit ShareInfo(ok);
+}
+
+void MyMainWindow::showForkInfo(bool ok)
+{
+	emit ForkInfo(ok);
 }
 
 void MyMainWindow::showInfo()
@@ -272,7 +285,9 @@ void MyMainWindow::startUploadMission(QString name)
 		showNetBrokenInfo();
 	}
 	else {
-		c->PushPutCommand(fileName.toStdString(), filePath.toStdString(), c->GetControl()->GetManager()->GetCurrentDir());
+//		c->PushPutCommand(fileName.toStdString(), filePath.toStdString(), c->GetControl()->GetManager()->GetCurrentDir());
+//		std::string((const char *)fileName.toLocal8Bit())
+		c->PushPutCommand(std::string((const char *)fileName.toLocal8Bit()), std::string((const char *)filePath.toLocal8Bit()), c->GetControl()->GetManager()->GetCurrentDir(), fileName.toStdString());
 	}
 }
 
@@ -415,6 +430,7 @@ void MyMainWindow::enterDir(QString name)
 	if (!c->GetControl()->IsLogIn() || !c->GetControl()->IsConnect()) {
 		c->GetControl()->Restart();
 		MyLogInDialog* dialog = new MyLogInDialog(this);
+		dialog->setGeometry(0, 0, 350, 160);
 		if (dialog->exec() != QDialog::Accepted) {
 			CleanAndClose();
 		}
@@ -522,11 +538,23 @@ void MyMainWindow::send(QString cID, QString content)
 	fout.close();
 }
 
+void MyMainWindow::fork(QString id, QString pass)
+{
+	showNetBrokenInfo();
+	MyController* c = MyController::Instance();
+	c->PushForkCommand(id.toStdString(), pass.toStdString(), c->GetControl()->GetManager()->GetCurrentDir());
+}
+
 void MyMainWindow::showFileInfo(QString & name, QString & path, QString & date, QString & size, QString & type)
 {
 	lpFileProperty->setGeometry(300, 200, 200, 300);
 	lpFileProperty->SetText(name, path, date, size, type);
 	lpFileProperty->show();
+}
+
+void MyMainWindow::setCapasity(unsigned long long c)
+{
+	lpMenuBar->SetCapasity(c);
 }
 
 void MyMainWindow::suspendD(int n)
@@ -597,6 +625,17 @@ void MyMainWindow::ShowShare(bool ok)
 	}
 	else {
 		lpError->ShareFalled();
+	}
+	showInfo();
+}
+
+void MyMainWindow::ShowFork(bool ok)
+{
+	if (ok) {
+		lpError->ForkOK();
+	}
+	else {
+		lpError->ForkFailed();
 	}
 	showInfo();
 }

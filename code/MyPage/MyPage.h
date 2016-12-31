@@ -58,6 +58,7 @@ signals:
     void Share(QString, QString);
     void Delete(QString);
     void NewDir(QString);
+	void Fork(QString, QString);
     void Back();
     void Front();
     void Refresh();
@@ -89,6 +90,7 @@ private slots:
     void sendShareSignal(QString, QString);
     void sendDeleteSignal(QString);
     void sendNewDirSignal(QString);
+	void sendForkSignal(QString, QString);
     void sendBackSignal();
     void sendFrontSignal();
     void sendRefreshSignal();

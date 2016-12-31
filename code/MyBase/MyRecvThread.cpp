@@ -68,8 +68,13 @@ bool MyRecvThread::Communicate()
 		if (recv == "[check]") {							//保活信息
 			continue;
 		}
-		temp = MyCommandBuilder::MakeMessageCommand();		
-		temp->GetServerResponse(recv.c_str(), recv.size());
+		if (recv.substr(0, 8) == "[zenith]") {
+			temp = new MySetCapasityCommand(recv.substr(8, recv.size()-8));
+		}
+		else {
+			temp = MyCommandBuilder::MakeMessageCommand();
+			temp->GetServerResponse(recv.c_str(), recv.size());
+		}
 		buffer->PutRecvCommand(temp);
 	}
 	return true;

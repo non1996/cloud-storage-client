@@ -11,6 +11,11 @@ MyMenuBar::MyMenuBar(QWidget *parent) : QWidget(parent)
     setSlotConnect();
 }
 
+void MyMenuBar::SetCapasity(unsigned long long c)
+{
+	lpUserInfo->SetCapasity(c);
+}
+
 void MyMenuBar::createWidget()
 {
     lpUserInfo = new MyUserLabel(this);

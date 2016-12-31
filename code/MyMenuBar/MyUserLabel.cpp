@@ -17,14 +17,22 @@ MyUserLabel::MyUserLabel(QWidget *parent) : QWidget(parent)
 void MyUserLabel::SetInfo(QString name, QString url, unsigned long long cv, unsigned long long tv)
 {
 	lpUsername->setText(name);
-	lpNetCapacity->setRange(0, (int)tv);
-	lpNetCapacity->setValue((int)cv);
+	lpNetCapacity->setRange(0, tv/4096);
+	lpNetCapacity->setValue(cv/4096);
 	QPixmap* pixmap = new QPixmap(100, 100);
 	pixmap->load(url);
 	QPixmap scaledPixmap = pixmap->scaled(QSize(80, 80), Qt::KeepAspectRatio);
 	lpUserProfilePic->setPixmap(scaledPixmap);
+	lpVInfo->setText(GetV(cv) + "/" + GetV(tv));
+}
 
-	lpVInfo->setText(GetV(cv) + " / " + GetV(tv));
+void MyUserLabel::SetCapasity(unsigned long long c)
+{
+	QString temp = lpVInfo->text();
+	int pos = temp.indexOf('/');
+	QString cc = temp.mid(pos, temp.size()-pos);
+	lpNetCapacity->setValue(c/4096);
+	lpVInfo->setText(GetV(c) + cc);
 }
 
 void MyUserLabel::InitWidget(){
@@ -105,20 +113,3 @@ QString MyUserLabel::GetV(unsigned long long v)
 		return QString("%1TB").arg(v / 1099511627776);
 	}
 }
-/*
-void MyUserLabel::GetNetworkPic(QString & u)
-{
-	QUrl url(u);
-	QNetworkAccessManager manager;
-	QEventLoop loop;
-
-	QNetworkReply *reply = manager.get(QNetworkRequest(url));
-	QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-	loop.exec();
-
-	QByteArray jpegData = reply->readAll();
-	QPixmap pixmap;
-	pixmap.loadFromData(jpegData);
-	lpUserProfilePic->setPixmap(pixmap);
-}
-*/

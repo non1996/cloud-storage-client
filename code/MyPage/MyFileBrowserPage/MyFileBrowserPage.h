@@ -47,6 +47,7 @@ signals:
     void Share(QString, QString);
     void Delete(QString);
     void NewDir(QString);
+	void Fork(QString, QString);
 
     void Back();
     void Front();
@@ -70,6 +71,7 @@ private slots:
     void clickedShare();
     void clickedDelete();
     void clickedAdd();
+	void clickedFork();
 
     //与文件夹信息栏相关的信号槽
     void clickedBack();
